@@ -31,7 +31,11 @@ public record User(
     @Enumerated(EnumType.STRING) @Column(name = "STATUS")
     UserStatus userStatus) {
 
-    public User() {
-        this(null, null, null, null, null, null, null, UserStatus.ACTIVE);
+    public User(String username, String password, String email, String name, String surname) {
+        this(null, username, password, email.toLowerCase(), name, surname, LocalDateTime.now(), UserStatus.ACTIVE);
+    }
+
+    public User(String username, String password, String email, String name, String surname, UserStatus userStatus) {
+        this(null, username, password, email, name, surname, null, userStatus);
     }
 }
