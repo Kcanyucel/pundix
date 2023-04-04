@@ -1,0 +1,5 @@
+package com.pundix.response;
+
+public record ErrorResponse(String message, int errorCode) {
+}
+

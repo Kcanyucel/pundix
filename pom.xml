@@ -9,8 +9,7 @@
         <version>3.0.5</version>
         <relativePath/>
     </parent>
-
-    <groupId>com.example</groupId>
+    <groupId>com.pundix</groupId>
     <artifactId>pundix</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <name>pundix</name>
@@ -36,6 +35,11 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-data-jpa</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-validation</artifactId>
         </dependency>
 
         <dependency>
