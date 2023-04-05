@@ -16,7 +16,7 @@ public record UserService(PasswordEncoderService passwordEncoderService, Message
 
     public UserCreateResponse createUser(UserRequest userRequest) {
         String encodingPassword = passwordEncoderService.encodePassword(userRequest.password());
-        User user = new User(userRequest.username(), encodingPassword, userRequest.email(), userRequest.name(), userRequest.surname());
+        User user = new User(userRequest.username(), encodingPassword, userRequest.email().toLowerCase(), userRequest.name(), userRequest.surname());
         user.setCreatedDate();
         userRepository.save(user);
 
