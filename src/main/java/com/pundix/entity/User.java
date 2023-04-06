@@ -34,6 +34,15 @@ public class User {
     @Column(name = "STATUS")
     private UserStatus userStatus = UserStatus.ACTIVE;
 
+    public User(Long id, String username, String password, String email, String name, String surname) {
+        this.id =id;
+        this.username = username;
+        this.password = password;
+        this.email = email;
+        this.name = name;
+        this.surname = surname;
+    }
+
     public User(String username, String password, String email, String name) {
         this.username = username;
         this.password = password;

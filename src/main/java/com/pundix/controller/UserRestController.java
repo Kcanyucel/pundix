@@ -8,7 +8,16 @@ import org.springframework.web.bind.annotation.*;
 
 @RequestMapping("user")
 @RestController
-public record UserRestController(UserService userService, UserRequestValidator userRequestValidator) {
+public class UserRestController {
+
+    private final UserService userService;
+
+    private final UserRequestValidator userRequestValidator;
+
+    public UserRestController(UserService userService, UserRequestValidator userRequestValidator) {
+        this.userService = userService;
+        this.userRequestValidator = userRequestValidator;
+    }
 
     @PostMapping("/create")
     public UserCreateResponse createUser(@RequestBody UserRequest userRequest) {

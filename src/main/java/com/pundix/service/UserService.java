@@ -6,13 +6,25 @@ import com.pundix.exception.custom.UserNotFoundException;
 import com.pundix.repository.UserRepository;
 import com.pundix.request.UserRequest;
 import com.pundix.response.*;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
 
 @Service
-public record UserService(PasswordEncoderService passwordEncoderService, MessageResourceService messageResourceService,
-                          UserRepository userRepository) {
+public class UserService {
+
+    private final PasswordEncoderService passwordEncoderService;
+
+    private final MessageResourceService messageResourceService;
+
+    private final UserRepository userRepository;
+
+    public UserService(PasswordEncoderService passwordEncoderService, MessageResourceService messageResourceService, UserRepository userRepository) {
+        this.passwordEncoderService = passwordEncoderService;
+        this.messageResourceService = messageResourceService;
+        this.userRepository = userRepository;
+    }
 
     public UserCreateResponse createUser(UserRequest userRequest) {
         String encodingPassword = passwordEncoderService.encodePassword(userRequest.password());
