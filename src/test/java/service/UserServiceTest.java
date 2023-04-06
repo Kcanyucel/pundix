@@ -33,10 +33,6 @@ public class UserServiceTest {
     @InjectMocks
     UserService userService;
 
-    @InjectMocks
-    MessageResourceService messageResourceService;
-
-
     @Test
     public void verifyCreateUserSuccessfully() {
         UserRequest userRequest = new UserRequest("Tristian43", "Romelik12", "Antony18@hotmail.com", "Tristian", "Romelik");
@@ -52,7 +48,6 @@ public class UserServiceTest {
         assertThat(response.email(), is(equalTo("Antony18@hotmail.com")));
     }
 
-
     @Test
     public void verifyUpdateUserSuccessfully() {
         UserRequest userRequest = new UserRequest("Marcom19@hotmail.com", "Marcom", "Lucia");
@@ -63,13 +58,13 @@ public class UserServiceTest {
         UserUpdateResponse response = userService.updateUser(user.getId(), userRequest);
 
         assertNotNull(response);
-        assertThat(response.message(), is(equalTo(messageResourceService.getMessage("user.is.updated"))));
+        assertThat(response.message(), is(equalTo("Kullanıcı Güncellenmiştir.")));
         assertThat(response.username(), is(equalTo("Tristian43")));
     }
 
     @Test
     public void verifyGetUserSuccessfully() {
-        User user = new User(1L, "Tristian43", "Romelik12", "Antony18@hotmail.com", "Tristian", "Romelik");
+        User user = UserFaker.createDefaultUser();
 
         when(userRepository.findUserById(1L)).thenReturn(Optional.of(user));
         Optional<User> foundUser = userService.getUserById(1L);
