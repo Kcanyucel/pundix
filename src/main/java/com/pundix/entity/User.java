@@ -1,10 +1,6 @@
 package com.pundix.entity;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.Max;
-import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 
 import java.time.LocalDateTime;
 
@@ -16,32 +12,18 @@ public class User {
     @GeneratedValue(generator = "ID_GENERATOR", strategy = GenerationType.SEQUENCE)
     private Long id;
 
-   // @NotNull(message = "error.user.username.null")
-   // @NotBlank(message = "error.user.username.empty")
-   // @Min(value = 5, message = "error.user.username.min.length")
-   // @Max(value = 20, message = "error.user.username.max.length")
-   // @Column(name = "USERNAME", nullable = false)
+    @Column(name = "USERNAME", nullable = false)
     private String username;
 
-    // @NotNull(message = "error.user.password.null")
-    // @NotBlank(message = "error.user.password.empty")
-    // @Min(value = 5, message = "error.user.password.min.length")
-    //  @Max(value = 15, message = "error.user.password.max.length")
     @Column(name = "PASSWORD", nullable = false)
     private String password;
 
-    //  @NotNull(message = "error.user.email.null")
-    //  @NotBlank(message = "error.user.email.empty")
     @Column(name = "EMAIL", nullable = false)
     private String email;
 
-    // @Min(value = 3, message = "error.user.name.min.length")
-    // @Max(value = 30, message = "error.user.name.max.length")
     @Column(name = "NAME")
     private String name;
 
-    //@Min(value = 3, message = "error.user.surname.min.length")
-    //@Max(value = 30, message = "error.user.surname.max.length")
     @Column(name = "SURNAME")
     private String surname;
 
@@ -68,7 +50,6 @@ public class User {
     }
 
     public User() {
-
     }
 
     public Long getId() {

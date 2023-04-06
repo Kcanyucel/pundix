@@ -4,7 +4,6 @@ import com.pundix.request.UserRequest;
 import com.pundix.response.*;
 import com.pundix.service.UserService;
 import com.pundix.validator.UserRequestValidator;
-import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.*;
 
 @RequestMapping("user")
@@ -12,7 +11,7 @@ import org.springframework.web.bind.annotation.*;
 public record UserRestController(UserService userService, UserRequestValidator userRequestValidator) {
 
     @PostMapping("/create")
-    public UserCreateResponse createUser(@Valid @RequestBody UserRequest userRequest) {
+    public UserCreateResponse createUser(@RequestBody UserRequest userRequest) {
         userRequestValidator.validateForCreate(userRequest);
         return userService.createUser(userRequest);
     }
@@ -34,6 +33,7 @@ public record UserRestController(UserService userService, UserRequestValidator u
 
     @PutMapping("/update")
     public UserUpdateResponse updateUser(@RequestParam Long id, @RequestBody UserRequest userRequest) {
+        userRequestValidator.validateForUpdate(userRequest);
         return userService.updateUser(id, userRequest);
     }
 }
