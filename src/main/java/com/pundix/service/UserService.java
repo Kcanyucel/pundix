@@ -20,7 +20,7 @@ public record UserService(PasswordEncoderService passwordEncoderService, Message
         user.setCreatedDate();
         userRepository.save(user);
 
-        return new UserCreateResponse(user.getId(), user.getUsername(), user.getUsername());
+        return new UserCreateResponse(user.getId(), user.getUsername(), user.getEmail());
     }
 
     public UserDetailResponse getUser(Long id) {
@@ -30,6 +30,7 @@ public record UserService(PasswordEncoderService passwordEncoderService, Message
             throw new UserNotFoundException();
         }
         User foundUser = user.get();
+
         return new UserDetailResponse(foundUser.getUsername(), foundUser.getEmail(), foundUser.getName(), foundUser.getSurname());
     }
 

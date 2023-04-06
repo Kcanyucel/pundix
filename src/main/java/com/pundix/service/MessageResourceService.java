@@ -12,10 +12,6 @@ public record MessageResourceService(MessageSource messageSource) {
         return messageSource.getMessage(key, null, getLocale());
     }
 
-    public String getMessage(String key, String... params) {
-        return messageSource.getMessage(key, params, getLocale());
-    }
-
     public String getMessage(String key, Integer... params) {
         return messageSource.getMessage(key, params, getLocale());
     }
