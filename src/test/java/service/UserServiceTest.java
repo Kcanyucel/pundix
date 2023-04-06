@@ -5,7 +5,6 @@ import com.pundix.repository.UserRepository;
 import com.pundix.request.UserRequest;
 import com.pundix.response.UserCreateResponse;
 import com.pundix.response.UserUpdateResponse;
-import com.pundix.service.MessageResourceService;
 import com.pundix.service.UserService;
 import faker.UserFaker;
 import org.junit.jupiter.api.Test;
@@ -52,9 +51,7 @@ public class UserServiceTest {
     public void verifyUpdateUserSuccessfully() {
         UserRequest userRequest = new UserRequest("Marcom19@hotmail.com", "Marcom", "Lucia");
         User user = UserFaker.createDefaultUser();
-
         when(userRepository.save(Mockito.any(User.class))).thenReturn(user);
-
         UserUpdateResponse response = userService.updateUser(user.getId(), userRequest);
 
         assertNotNull(response);
@@ -65,7 +62,6 @@ public class UserServiceTest {
     @Test
     public void verifyGetUserSuccessfully() {
         User user = UserFaker.createDefaultUser();
-
         when(userRepository.findUserById(1L)).thenReturn(Optional.of(user));
         Optional<User> foundUser = userService.getUserById(1L);
 
