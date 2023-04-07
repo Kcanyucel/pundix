@@ -4,9 +4,9 @@ import com.pundix.entity.User;
 import com.pundix.entity.UserStatus;
 import com.pundix.exception.custom.UserNotFoundException;
 import com.pundix.repository.UserRepository;
-import com.pundix.request.UserRequest;
+import com.pundix.request.UserCreateRequest;
+import com.pundix.request.UserUpdateRequest;
 import com.pundix.response.*;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
@@ -26,10 +26,16 @@ public class UserService {
         this.userRepository = userRepository;
     }
 
-    public UserCreateResponse createUser(UserRequest userRequest) {
-        String encodingPassword = passwordEncoderService.encodePassword(userRequest.password());
-        User user = new User(userRequest.username(), encodingPassword, userRequest.email().toLowerCase(), userRequest.name(), userRequest.surname());
-        user.setCreatedDate();
+    public UserCreateResponse createUser(UserCreateRequest userRequest) {
+        String encodingPassword = passwordEncoderService.encodePassword(userRequest.getPassword());
+
+        User user = User.builder()
+            .username(userRequest.getUsername().toLowerCase())
+            .password(encodingPassword)
+            .email(userRequest.getEmail().toLowerCase())
+            .name(userRequest.getName())
+            .surname(userRequest.getSurname()).build();
+
         userRepository.save(user);
 
         return new UserCreateResponse(user.getId(), user.getUsername(), user.getEmail());
@@ -43,7 +49,7 @@ public class UserService {
         }
         User foundUser = user.get();
 
-        return new UserDetailResponse(foundUser.getUsername(), foundUser.getEmail(), foundUser.getName(), foundUser.getSurname());
+        return new UserDetailResponse(foundUser.getId(), foundUser.getUsername(), foundUser.getEmail(), foundUser.getName(), foundUser.getSurname());
     }
 
     public UserDeleteResponse deleteUser(Long id) {
@@ -70,14 +76,18 @@ public class UserService {
         return new UserCloseResponse(messageResourceService.getMessage("user.is.closed"), closedUser.getUsername());
     }
 
-    public UserUpdateResponse updateUser(Long id, UserRequest userRequest) {
+    public UserUpdateResponse updateUser(Long id, UserUpdateRequest userUpdateRequest) {
         Optional<User> user = getUserById(id);
 
         if (user.isEmpty()) {
             throw new UserNotFoundException();
         }
-        User userToBeUpdated = user.get();
-        User updatedUser = new User(userToBeUpdated.getPassword(), userRequest.email(), userRequest.name(), userRequest.surname());
+        User updatedUser = User.builder()
+            .password(userUpdateRequest.getPassword())
+            .email(userUpdateRequest.getEmail())
+            .name(userUpdateRequest.getName())
+            .surname(userUpdateRequest.getSurname()).build();
+
         userRepository.save(updatedUser);
 
         return new UserUpdateResponse(messageResourceService.getMessage("user.is.updated"), updatedUser.getUsername());

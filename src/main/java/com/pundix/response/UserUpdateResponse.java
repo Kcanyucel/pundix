@@ -1,8 +1,17 @@
 package com.pundix.response;
 
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+
 import java.time.LocalDateTime;
 
-public record UserUpdateResponse(String message, String username, LocalDateTime updatedDate) {
+@AllArgsConstructor
+@Getter
+public class UserUpdateResponse {
+
+    private String message;
+    private String username;
+    LocalDateTime updatedDate;
 
     public UserUpdateResponse(String message, String username) {
         this(message, username, LocalDateTime.now());

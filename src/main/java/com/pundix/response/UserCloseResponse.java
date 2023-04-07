@@ -1,11 +1,19 @@
 package com.pundix.response;
 
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+
 import java.time.LocalDateTime;
 
-public record UserCloseResponse(String message, String username, LocalDateTime closedDate) {
+@Getter
+@AllArgsConstructor
+public class UserCloseResponse {
+
+    private String message;
+    private String username;
+    private LocalDateTime closedDate;
 
     public UserCloseResponse(String message, String username) {
-
         this(message, username, LocalDateTime.now());
     }
 }
