@@ -1,6 +1,7 @@
 package com.pundix.validator;
 
-import com.pundix.request.UserRequest;
+import com.pundix.request.UserCreateRequest;
+import com.pundix.request.UserUpdateRequest;
 import com.pundix.service.MessageResourceService;
 import com.pundix.service.UserService;
 import org.springframework.stereotype.Component;
@@ -16,19 +17,19 @@ public class UserRequestValidator extends BaseValidator {
         this.userService = userService;
     }
 
-    public void validateForCreate(UserRequest userRequest) {
-        validateUsername(userRequest.username());
-        validatePassword(userRequest.password());
-        validateEmail(userRequest.email());
+    public void validateForCreate(UserCreateRequest userCreateRequest) {
+        validateUsername(userCreateRequest.getUsername());
+        validatePassword(userCreateRequest.getPassword());
+        validateEmail(userCreateRequest.getEmail());
 
-        if (!userRequest.name().isBlank() || !userRequest.surname().isBlank()) {
-            validateName(userRequest.name());
-            validateSurname(userRequest.surname());
+        if (!userCreateRequest.getName().isBlank() || !userCreateRequest.getSurname().isBlank()) {
+            validateName(userCreateRequest.getName());
+            validateSurname(userCreateRequest.getSurname());
         }
     }
 
-    public void validateForUpdate(UserRequest userRequest) {
-        boolean emailExists = userService.existsByEmail(userRequest.email());
+    public void validateForUpdate(UserUpdateRequest userUpdateRequest) {
+        boolean emailExists = userService.existsByEmail(userUpdateRequest.getEmail());
         validateFalse(emailExists, messageResourceService.getMessage("error.user.email.exist"));
     }
 

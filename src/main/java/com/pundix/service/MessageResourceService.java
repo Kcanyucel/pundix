@@ -3,10 +3,17 @@ package com.pundix.service;
 import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Service;
 
+import java.io.Serializable;
 import java.util.Locale;
 
 @Service
-public record MessageResourceService(MessageSource messageSource) {
+public class MessageResourceService implements Serializable {
+
+    private final MessageSource messageSource;
+
+    public MessageResourceService(MessageSource messageSource) {
+        this.messageSource = messageSource;
+    }
 
     public String getMessage(String key) {
         return messageSource.getMessage(key, null, getLocale());

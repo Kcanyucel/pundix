@@ -1,5 +1,16 @@
 package com.pundix.response;
 
-public record ErrorResponse(String message, int errorCode) {
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.Setter;
+
+@Getter
+@Setter
+@AllArgsConstructor
+public class ErrorResponse {
+
+    private String message;
+    private int errorCode;
+
 }
 

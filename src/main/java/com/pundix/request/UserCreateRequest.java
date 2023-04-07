@@ -1,18 +1,20 @@
-package com.pundix.response;
+package com.pundix.request;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
+import lombok.Setter;
 
 @Getter
+@Setter
+@Builder
 @AllArgsConstructor
-public class UserDetailResponse {
+public class UserCreateRequest {
 
-    private Long id;
     private String username;
+    private String password;
     private String email;
     private String name;
     private String surname;
+
 }
-
-
-
