@@ -1,9 +1,13 @@
 package com.pundix.validator;
 
+import com.pundix.entity.User;
 import com.pundix.exception.BadRequestExpection;
+import com.pundix.exception.custom.UserNotFoundException;
 import org.springframework.stereotype.Component;
 
 import java.util.Objects;
+
+import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -77,12 +81,14 @@ public class BaseValidator {
         validateRegex(value, "^[a-zA-Z0-9]*$", errorMessage);
     }
 
-    public void validateEmailCharacters(String value, String errorMessage) {
-        validateRegex(value, "^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$", errorMessage);
-    }
-
     public void validateLetter(String value, String errorMessage) {
         validateRegex(value, "^[a-zA-Z]+$", errorMessage);
+    }
+
+    public void validateUserEmpty(Optional<User> user){
+        if (user.isEmpty()) {
+            throw new UserNotFoundException();
+        }
     }
 }
 

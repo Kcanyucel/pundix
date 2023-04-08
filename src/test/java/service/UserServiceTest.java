@@ -4,11 +4,9 @@ import com.pundix.entity.User;
 import com.pundix.entity.UserStatus;
 import com.pundix.repository.UserRepository;
 import com.pundix.request.UserCreateRequest;
+import com.pundix.request.UserLoginRequest;
 import com.pundix.request.UserUpdateRequest;
-import com.pundix.response.UserCloseResponse;
-import com.pundix.response.UserCreateResponse;
-import com.pundix.response.UserDeleteResponse;
-import com.pundix.response.UserUpdateResponse;
+import com.pundix.response.user.*;
 import com.pundix.service.MessageResourceService;
 import com.pundix.service.PasswordEncoderService;
 import com.pundix.service.UserService;
@@ -25,11 +23,9 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-
 
 @ExtendWith(SpringExtension.class)
 public class UserServiceTest {
@@ -65,19 +61,36 @@ public class UserServiceTest {
         User capturedUser = userCaptor.getValue();
 
         assertNotNull(capturedUser);
-        assertThat(capturedUser.getId(), is(equalTo(1L)));
-        assertThat(response.getUsername(), is(equalTo("jameswilliam")));
+        assertNotNull(capturedUser.getCreatedDate());
+        assertThat(capturedUser.getUserStatus(), is(equalTo(UserStatus.ACTIVE)));
+        assertThat(capturedUser.getId(), is(equalTo(UserFaker.ID)));
+        assertThat(response.getUsername(), is(equalTo(UserFaker.USERNAME.toLowerCase())));
         assertThat(capturedUser.getPassword(), is(equalTo("password")));
+    }
+
+    @Test
+    public void verifyLoginUserSuccessfully() {
+        User user = UserFaker.generate();
+
+        UserLoginRequest request = UserRequestFaker.fromLogin();
+
+        when(userRepository.findUserByUsername(request.getUsername())).thenReturn(Optional.of(user));
+        when(messageResourceService.getMessage(anyString())).thenReturn("message");
+
+        UserLoginResponse response = userService.loginUser(request);
+
+        assertNotNull(response);
+        assertNotNull(response.getLoginDate());
     }
 
     @Test
     public void verifyGetUserSuccessfully() {
         User user = UserFaker.generate();
         when(userRepository.findUserById(user.getId())).thenReturn(Optional.of(user));
-        Optional<User> foundUser = userService.getUserById(user.getId());
+        Optional<User> foundUser = userService.findUserById(user.getId());
 
         assertNotNull(foundUser);
-        assertThat(foundUser.get().getId(), is(equalTo(1L)));
+        assertThat(foundUser.get().getId(), is(equalTo(UserFaker.ID)));
         assertThat(foundUser.get().getUsername(), is(equalTo(UserFaker.USERNAME.toLowerCase())));
         assertThat(foundUser.get().getPassword(), is(equalTo(UserFaker.PASSWORD)));
         assertThat(foundUser.get().getEmail(), is(equalTo(UserFaker.EMAIL)));
@@ -103,7 +116,7 @@ public class UserServiceTest {
         assertNotNull(response.getUpdatedDate());
         assertThat(response.getMessage(), is(equalTo("message")));
         assertThat(capturedUser.getPassword(), is(equalTo("encodingPassword")));
-        assertThat(response.getUsername(), is(equalTo("William")));
+        assertThat(response.getUsername(), is(equalTo(user.getUsername())));
     }
 
     @Test
@@ -115,7 +128,7 @@ public class UserServiceTest {
 
         assertNotNull(response);
         assertNotNull(response.getClosedDate());
-        assertThat(response.getUsername(), is(equalTo("jameswilliam")));
+        assertThat(response.getUsername(), is(equalTo(user.getUsername().toLowerCase())));
         assertThat(response.getMessage(), is(equalTo("message")));
         assertThat(user.getUserStatus(), is(equalTo(UserStatus.CLOSED)));
     }
@@ -129,7 +142,7 @@ public class UserServiceTest {
 
         assertNotNull(response);
         assertNotNull(response.getDeletedDate());
-        assertThat(response.getUsername(), is(equalTo("jameswilliam")));
+        assertThat(response.getUsername(), is(equalTo(user.getUsername())));
         assertThat(response.getMessage(), is(equalTo("message")));
     }
 }

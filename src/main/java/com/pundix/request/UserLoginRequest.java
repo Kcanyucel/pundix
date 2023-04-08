@@ -9,11 +9,8 @@ import lombok.Setter;
 @Setter
 @Builder
 @AllArgsConstructor
-public class UserCreateRequest {
+public class UserLoginRequest {
 
     private String username;
     private String password;
-    private String email;
-    private String name;
-    private String surname;
 }

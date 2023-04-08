@@ -13,7 +13,7 @@ public class UserFaker {
     public static final String EMAIL = "james_william87@outlook.com";
     public static final String NAME = "James";
     public static final String SURNAME = "William";
-    public static final String UPDATE_PREFIX = "Updated";
+    public static final String UPDATE_PREFIX = "Updated_";
 
     public static User generate() {
         return User.builder()
