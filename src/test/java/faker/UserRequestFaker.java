@@ -1,6 +1,7 @@
 package faker;
 
 import com.pundix.request.UserCreateRequest;
+import com.pundix.request.UserLoginRequest;
 import com.pundix.request.UserUpdateRequest;
 
 public class UserRequestFaker extends UserFaker {
@@ -21,6 +22,13 @@ public class UserRequestFaker extends UserFaker {
             .email(UPDATE_PREFIX + EMAIL)
             .name(UPDATE_PREFIX + NAME)
             .surname(UPDATE_PREFIX + SURNAME)
+            .build();
+    }
+
+    public static UserLoginRequest fromLogin() {
+        return UserLoginRequest.builder()
+            .username(USERNAME)
+            .password(PASSWORD)
             .build();
     }
 }

@@ -1,10 +1,11 @@
 package com.pundix.controller;
 
 import com.pundix.request.UserCreateRequest;
+import com.pundix.request.UserLoginRequest;
 import com.pundix.request.UserUpdateRequest;
-import com.pundix.response.*;
+import com.pundix.response.user.*;
 import com.pundix.service.UserService;
-import com.pundix.validator.UserRequestValidator;
+import com.pundix.validator.user.UserValidator;
 import org.springframework.web.bind.annotation.*;
 
 @RequestMapping("user")
@@ -13,21 +14,27 @@ public class UserRestController {
 
     private final UserService userService;
 
-    private final UserRequestValidator userRequestValidator;
+    private final UserValidator userValidator;
 
-    public UserRestController(UserService userService, UserRequestValidator userRequestValidator) {
+    public UserRestController(UserService userService, UserValidator userValidator) {
         this.userService = userService;
-        this.userRequestValidator = userRequestValidator;
+        this.userValidator = userValidator;
     }
 
     @PostMapping("/create")
     public UserCreateResponse createUser(@RequestBody UserCreateRequest userRequest) {
-        userRequestValidator.validateForCreate(userRequest);
+        userValidator.validateForCreate(userRequest);
         return userService.createUser(userRequest);
     }
 
+    @PostMapping("/login")
+    public UserLoginResponse loginUser(@RequestBody UserLoginRequest userLoginRequest) {
+        userValidator.validateForLogin(userLoginRequest);
+        return userService.loginUser(userLoginRequest);
+    }
+
     @GetMapping("/info")
-    public UserDetailResponse getUser(@RequestParam Long id) {
+    public UserInfoResponse getUser(@RequestParam Long id) {
         return userService.getUser(id);
     }
 
@@ -43,7 +50,7 @@ public class UserRestController {
 
     @PutMapping("/update")
     public UserUpdateResponse updateUser(@RequestParam Long id, @RequestBody UserUpdateRequest userUpdateRequest) {
-        userRequestValidator.validateForUpdate(userUpdateRequest);
+        userValidator.validateForUpdate(userUpdateRequest);
         return userService.updateUser(id, userUpdateRequest);
     }
 }

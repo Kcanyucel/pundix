@@ -1,11 +1,11 @@
-package com.pundix.response;
+package com.pundix.response.user;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 @Getter
 @AllArgsConstructor
-public class UserDetailResponse {
+public class UserInfoResponse {
 
     private Long id;
     private String username;

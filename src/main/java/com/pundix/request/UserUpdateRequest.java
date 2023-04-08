@@ -15,5 +15,4 @@ public class UserUpdateRequest {
     private String password;
     private String name;
     private String surname;
-
 }

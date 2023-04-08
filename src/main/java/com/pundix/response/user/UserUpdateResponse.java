@@ -1,20 +1,20 @@
-package com.pundix.response;
+package com.pundix.response.user;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-
+import lombok.Setter;
 import java.time.LocalDateTime;
 
-@Getter
 @AllArgsConstructor
-public class UserCloseResponse {
+@Getter
+@Setter
+public class UserUpdateResponse {
 
     private String message;
     private String username;
-    private LocalDateTime closedDate;
+    LocalDateTime updatedDate;
 
-    public UserCloseResponse(String message, String username) {
+    public UserUpdateResponse(String message, String username) {
         this(message, username, LocalDateTime.now());
     }
 }
-
