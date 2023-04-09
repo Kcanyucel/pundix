@@ -11,14 +11,13 @@ import java.time.LocalDateTime;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class UserLoginResponse {
+public class UserLogoutResponse {
 
     private String message;
-    private String accessToken;
-    private LocalDateTime loginDate;
+    private String username;
+    private LocalDateTime logoutDate;
 
-    public UserLoginResponse(String message, String accessToken) {
-        this(message, accessToken, LocalDateTime.now());
+    public UserLogoutResponse(String message, String username) {
+        this(message, username, LocalDateTime.now());
     }
 }
-

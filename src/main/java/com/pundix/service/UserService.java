@@ -1,19 +1,25 @@
 package com.pundix.service;
 
-import com.pundix.entity.User;
-import com.pundix.entity.UserStatus;
+import com.pundix.entity.user.User;
+import com.pundix.entity.user.UserSessionInfo;
+import com.pundix.entity.user.UserStatus;
 import com.pundix.exception.custom.UserNotFoundException;
+import com.pundix.exception.custom.UserSessionInfoNotFoundException;
 import com.pundix.repository.UserRepository;
+import com.pundix.repository.UserSessionInfoRepository;
 import com.pundix.request.UserCreateRequest;
 import com.pundix.request.UserLoginRequest;
 import com.pundix.request.UserUpdateRequest;
 import com.pundix.response.user.*;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.Optional;
 
 @Service
 public class UserService {
+
+    private final TokenService tokenService;
 
     private final PasswordEncoderService passwordEncoderService;
 
@@ -21,10 +27,14 @@ public class UserService {
 
     private final UserRepository userRepository;
 
-    public UserService(PasswordEncoderService passwordEncoderService, MessageResourceService messageResourceService, UserRepository userRepository) {
+    private final UserSessionInfoRepository userSessionInfoRepository;
+
+    public UserService(PasswordEncoderService passwordEncoderService, MessageResourceService messageResourceService, TokenService tokenService, UserSessionInfoRepository userSessionInfoRepository, UserRepository userRepository) {
         this.passwordEncoderService = passwordEncoderService;
         this.messageResourceService = messageResourceService;
         this.userRepository = userRepository;
+        this.userSessionInfoRepository = userSessionInfoRepository;
+        this.tokenService = tokenService;
     }
 
     public UserCreateResponse createUser(UserCreateRequest userRequest) {
@@ -36,12 +46,20 @@ public class UserService {
             .email(userRequest.getEmail().toLowerCase())
             .name(userRequest.getName())
             .surname(userRequest.getSurname())
+            .createdDate(LocalDateTime.now())
+            .userStatus(UserStatus.ACTIVE)
             .build();
-
-
         userRepository.save(user);
 
-        return new UserCreateResponse(user.getId(), user.getUsername(), user.getEmail());
+        UserSessionInfo userSessionInfo = UserSessionInfo.builder()
+            .userId(user.getId())
+            .username(user.getUsername().toLowerCase())
+            .accessToken(tokenService.createAccessToken())
+            .loginDate(LocalDateTime.now())
+            .build();
+        userSessionInfoRepository.save(userSessionInfo);
+
+        return new UserCreateResponse(user.getId(), user.getUsername(), user.getEmail(), userSessionInfo.getAccessToken());
     }
 
     public UserLoginResponse loginUser(UserLoginRequest userLoginRequest) {
@@ -50,9 +68,36 @@ public class UserService {
         if (user.isEmpty()) {
             throw new UserNotFoundException();
         }
+        UserSessionInfo userSessionInfo = UserSessionInfo.builder()
+            .userId(user.get().getId())
+            .username(user.get().getUsername().toLowerCase())
+            .accessToken(tokenService.createAccessToken())
+            .loginDate(LocalDateTime.now())
+            .build();
+        userSessionInfoRepository.save(userSessionInfo);
 
-        return new UserLoginResponse(messageResourceService.getMessage("user.is.login"));
+        return new UserLoginResponse(messageResourceService.getMessage("user.is.login"), userSessionInfo.getAccessToken());
     }
+
+    public UserLogoutResponse logoutUser(String accessToken) {
+        Optional<UserSessionInfo> sessionInfo = findUserSessionInfoByAccessToken(accessToken);
+
+        if (sessionInfo.isEmpty()) {
+            throw new UserSessionInfoNotFoundException();
+        }
+        UserSessionInfo userSessionInfoAfterLogout = UserSessionInfo.builder()
+            .loginDate(sessionInfo.get().getLoginDate())
+            .id(sessionInfo.get().getId())
+            .userId(sessionInfo.get().getUserId())
+            .username(sessionInfo.get().getUsername())
+            .logoutDate(LocalDateTime.now())
+            .accessToken(null)
+            .build();
+        userSessionInfoRepository.save(userSessionInfoAfterLogout);
+
+        return new UserLogoutResponse(messageResourceService.getMessage("user.is.logout"), sessionInfo.get().getUsername());
+    }
+
 
     public UserInfoResponse getUser(Long id) {
         Optional<User> user = findUserById(id);
@@ -73,6 +118,8 @@ public class UserService {
         }
         User userToBeDeleted = user.get();
         userRepository.deleteById(id);
+        userSessionInfoRepository.deleteUserSessionInfoByUserId(user.get().getId());
+
         return new UserDeleteResponse(messageResourceService.getMessage("user.is.deleted"), userToBeDeleted.getUsername());
     }
 
@@ -82,10 +129,10 @@ public class UserService {
         if (user.isEmpty()) {
             throw new UserNotFoundException();
         }
-
         User closedUser = user.get();
         closedUser.setUserStatus(UserStatus.CLOSED);
         userRepository.save(closedUser);
+        userSessionInfoRepository.closeSessionByUserId(closedUser.getId());
 
         return new UserCloseResponse(messageResourceService.getMessage("user.is.closed"), closedUser.getUsername());
     }
@@ -103,7 +150,6 @@ public class UserService {
             .email(userUpdateRequest.getEmail())
             .name(userUpdateRequest.getName())
             .surname(userUpdateRequest.getSurname()).build();
-
         userRepository.save(updatedUser);
 
         return new UserUpdateResponse(messageResourceService.getMessage("user.is.updated"), updatedUser.getUsername());
@@ -117,6 +163,10 @@ public class UserService {
         return userRepository.findUserByUsername(username);
     }
 
+    public Optional<UserSessionInfo> findUserSessionInfoByAccessToken(String accessToken) {
+        return userSessionInfoRepository.findUserSessionInfoByAccessToken(accessToken);
+    }
+
     public boolean existsByEmail(String email) {
         return userRepository.existsByEmail(email);
     }
@@ -126,6 +176,6 @@ public class UserService {
     }
 
     public boolean existByPassword(String password) {
-        return userRepository.existsByEmail(password);
+        return userRepository.existsByPassword(password);
     }
 }

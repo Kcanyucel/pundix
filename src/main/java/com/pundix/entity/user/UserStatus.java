@@ -1,4 +1,4 @@
-package com.pundix.entity;
+package com.pundix.entity.user;
 
 public enum UserStatus {
 

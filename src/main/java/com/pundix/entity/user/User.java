@@ -1,12 +1,11 @@
-package com.pundix.entity;
+package com.pundix.entity.user;
 
 import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDateTime;
 
-@Getter
-@Setter
+@Data
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
@@ -35,9 +34,13 @@ public class User {
 
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "CREATED_DATE")
-    private LocalDateTime createdDate = LocalDateTime.now();
+    private LocalDateTime createdDate;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "STATUS")
-    private UserStatus userStatus = UserStatus.ACTIVE;
+    private UserStatus userStatus;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "ROLE")
+    private UserRole userRole;
 }

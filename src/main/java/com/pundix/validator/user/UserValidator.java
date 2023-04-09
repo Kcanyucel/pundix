@@ -52,7 +52,7 @@ public class UserValidator extends BaseValidator {
 
         validatePasswordNotNull(userLoginRequest.getPassword());
         validatePasswordIsBlank(userLoginRequest.getPassword());
-        validatePasswordNotExist(userLoginRequest.getPassword());
+        validatePasswordExist(userLoginRequest.getPassword());
     }
 
     public void validateForUpdate(UserUpdateRequest userUpdateRequest) {
@@ -70,6 +70,12 @@ public class UserValidator extends BaseValidator {
             validateNameLetter(userUpdateRequest.getName());
             validateSurnameLetter(userUpdateRequest.getSurname());
         }
+    }
+
+    public void validateForDelete() {
+    }
+
+    public void validateForClose() {
     }
 
     public void validateUsernameNotNull(String username) {
@@ -140,6 +146,13 @@ public class UserValidator extends BaseValidator {
     }
 
     private void validatePasswordNotExist(String password) {
+        String encodedpassword = passwordEncoderService.encodePassword(password);
+
+        boolean passwordExist = userService.existByPassword(encodedpassword);
+        validateFalse(passwordExist, messageResourceService.getMessage("error.user.password.not.correct"));
+    }
+
+    private void validatePasswordExist(String password) {
         String encodedpassword = passwordEncoderService.encodePassword(password);
 
         boolean passwordExist = userService.existByPassword(encodedpassword);

@@ -1,6 +1,6 @@
 package com.pundix.validator;
 
-import com.pundix.entity.User;
+import com.pundix.entity.user.User;
 import com.pundix.exception.BadRequestExpection;
 import com.pundix.exception.custom.UserNotFoundException;
 import org.springframework.stereotype.Component;
