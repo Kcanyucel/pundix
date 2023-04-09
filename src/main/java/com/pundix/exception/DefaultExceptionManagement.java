@@ -1,6 +1,7 @@
 package com.pundix.exception;
 
 import com.pundix.exception.custom.UserNotFoundException;
+import com.pundix.exception.custom.UserSessionInfoNotFoundException;
 import com.pundix.response.ErrorResponse;
 import com.pundix.service.MessageResourceService;
 import jakarta.validation.ConstraintViolation;
@@ -38,6 +39,14 @@ public class DefaultExceptionManagement extends RuntimeException {
         ErrorResponse errorResponse = new ErrorResponse(ex.getMessage(), HttpStatus.BAD_REQUEST.value());
 
         return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(value = {  UserSessionInfoNotFoundException.class})
+    public ResponseEntity<ErrorResponse> handleUserNotFoundException(  UserSessionInfoNotFoundException ex) {
+        final String message = messageResourceService.getMessage(ex.getMessage());
+        ErrorResponse errorResponse = new ErrorResponse(message, HttpStatus.NOT_FOUND.value());
+
+        return new ResponseEntity<>(errorResponse, HttpStatus.NOT_FOUND);
     }
 
     @ExceptionHandler(value = {UserNotFoundException.class})

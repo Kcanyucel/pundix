@@ -1,14 +1,14 @@
-package faker;
+package faker.user;
 
-import com.pundix.entity.User;
-import com.pundix.entity.UserStatus;
+import com.pundix.entity.user.User;
+import com.pundix.entity.user.UserStatus;
 
 import java.time.LocalDateTime;
 
 public class UserFaker {
 
     public static final Long ID = 1L;
-    public static final String USERNAME = "jameswilliam";
+    public static final String USERNAME = "Jameswilliam";
     public static final String PASSWORD = "james87";
     public static final String EMAIL = "james_william87@outlook.com";
     public static final String NAME = "James";

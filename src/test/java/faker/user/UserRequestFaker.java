@@ -1,8 +1,9 @@
-package faker;
+package faker.user;
 
 import com.pundix.request.UserCreateRequest;
 import com.pundix.request.UserLoginRequest;
 import com.pundix.request.UserUpdateRequest;
+import faker.user.UserFaker;
 
 public class UserRequestFaker extends UserFaker {
 

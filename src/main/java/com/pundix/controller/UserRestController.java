@@ -1,5 +1,6 @@
 package com.pundix.controller;
 
+import com.pundix.entity.user.UserSessionInfo;
 import com.pundix.request.UserCreateRequest;
 import com.pundix.request.UserLoginRequest;
 import com.pundix.request.UserUpdateRequest;
@@ -33,23 +34,28 @@ public class UserRestController {
         return userService.loginUser(userLoginRequest);
     }
 
-    @GetMapping("/info")
-    public UserInfoResponse getUser(@RequestParam Long id) {
+    @PostMapping("/logout")
+    public UserLogoutResponse logoutUser(@RequestHeader(value = "Access-Token") String accessToken) {
+        return userService.logoutUser(accessToken);
+    }
+
+    @GetMapping("/info/{id}")
+    public UserInfoResponse getUser(@PathVariable Long id) {
         return userService.getUser(id);
     }
 
-    @DeleteMapping("/delete")
-    public UserDeleteResponse deleteUser(@RequestParam Long id) {
+    @DeleteMapping("/delete/{id}")
+    public UserDeleteResponse deleteUser(@PathVariable Long id) {
         return userService.deleteUser(id);
     }
 
-    @PostMapping("/close")
-    public UserCloseResponse closeUser(@RequestParam Long id) {
+    @PostMapping("/close/{id}")
+    public UserCloseResponse closeUser(@PathVariable Long id) {
         return userService.closeUser(id);
     }
 
-    @PutMapping("/update")
-    public UserUpdateResponse updateUser(@RequestParam Long id, @RequestBody UserUpdateRequest userUpdateRequest) {
+    @PutMapping("/update/{id}")
+    public UserUpdateResponse updateUser(@PathVariable Long id, @RequestBody UserUpdateRequest userUpdateRequest) {
         userValidator.validateForUpdate(userUpdateRequest);
         return userService.updateUser(id, userUpdateRequest);
     }
