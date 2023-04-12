@@ -1,12 +1,13 @@
 package com.pundix.controller;
 
-import com.pundix.entity.user.UserSessionInfo;
 import com.pundix.request.UserCreateRequest;
 import com.pundix.request.UserLoginRequest;
 import com.pundix.request.UserUpdateRequest;
-import com.pundix.response.user.*;
+import com.pundix.response.*;
 import com.pundix.service.UserService;
-import com.pundix.validator.user.UserValidator;
+import com.pundix.validator.user.UserCreateRequestValidator;
+import com.pundix.validator.user.UserLoginRequestValidator;
+import com.pundix.validator.user.UserUpdateRequestValidator;
 import org.springframework.web.bind.annotation.*;
 
 @RequestMapping("user")
@@ -14,23 +15,35 @@ import org.springframework.web.bind.annotation.*;
 public class UserRestController {
 
     private final UserService userService;
+    private final UserCreateRequestValidator userCreateRequestValidator;
+    private final UserUpdateRequestValidator userUpdateRequestValidator;
+    private final UserLoginRequestValidator userLoginRequestValidator;
 
-    private final UserValidator userValidator;
-
-    public UserRestController(UserService userService, UserValidator userValidator) {
+    public UserRestController(UserService userService,
+                              UserCreateRequestValidator userCreateRequestValidator,
+                              UserUpdateRequestValidator userUpdateRequestValidator,
+                              UserLoginRequestValidator userLoginRequestValidator) {
         this.userService = userService;
-        this.userValidator = userValidator;
+        this.userCreateRequestValidator = userCreateRequestValidator;
+        this.userUpdateRequestValidator = userUpdateRequestValidator;
+        this.userLoginRequestValidator = userLoginRequestValidator;
     }
 
     @PostMapping("/create")
     public UserCreateResponse createUser(@RequestBody UserCreateRequest userRequest) {
-        userValidator.validateForCreate(userRequest);
+        userCreateRequestValidator.validate(userRequest);
         return userService.createUser(userRequest);
+    }
+
+    @PutMapping("/update/{id}")
+    public UserUpdateResponse updateUser(@PathVariable Long id, @RequestBody UserUpdateRequest userUpdateRequest) {
+        userUpdateRequestValidator.validate(userUpdateRequest);
+        return userService.updateUser(id, userUpdateRequest);
     }
 
     @PostMapping("/login")
     public UserLoginResponse loginUser(@RequestBody UserLoginRequest userLoginRequest) {
-        userValidator.validateForLogin(userLoginRequest);
+        userLoginRequestValidator.validate(userLoginRequest);
         return userService.loginUser(userLoginRequest);
     }
 
@@ -52,11 +65,5 @@ public class UserRestController {
     @PostMapping("/close/{id}")
     public UserCloseResponse closeUser(@PathVariable Long id) {
         return userService.closeUser(id);
-    }
-
-    @PutMapping("/update/{id}")
-    public UserUpdateResponse updateUser(@PathVariable Long id, @RequestBody UserUpdateRequest userUpdateRequest) {
-        userValidator.validateForUpdate(userUpdateRequest);
-        return userService.updateUser(id, userUpdateRequest);
     }
 }

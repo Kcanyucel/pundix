@@ -18,6 +18,6 @@ public interface UserSessionInfoRepository extends JpaRepository<UserSessionInfo
 
     @Modifying
     @Query("UPDATE UserSessionInfo u SET u.accessToken = null WHERE u.userId = :userId")
-    void closeSessionByUserId(@Param("userId") Long userId);
+    void closeUserSessionByUserId(@Param("userId") Long userId);
 
 }

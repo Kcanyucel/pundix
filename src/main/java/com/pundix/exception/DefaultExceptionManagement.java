@@ -1,5 +1,10 @@
 package com.pundix.exception;
 
+import com.pundix.exception.common.BadRequestExpection;
+import com.pundix.exception.common.IllegalArgumentException;
+import com.pundix.exception.common.IllegalStateException;
+import com.pundix.exception.common.InternalServerErrorException;
+import com.pundix.exception.common.NotFoundException;
 import com.pundix.exception.custom.UserNotFoundException;
 import com.pundix.exception.custom.UserSessionInfoNotFoundException;
 import com.pundix.response.ErrorResponse;
@@ -41,8 +46,8 @@ public class DefaultExceptionManagement extends RuntimeException {
         return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
     }
 
-    @ExceptionHandler(value = {  UserSessionInfoNotFoundException.class})
-    public ResponseEntity<ErrorResponse> handleUserNotFoundException(  UserSessionInfoNotFoundException ex) {
+    @ExceptionHandler(value = {UserSessionInfoNotFoundException.class})
+    public ResponseEntity<ErrorResponse> handleUserNotFoundException(UserSessionInfoNotFoundException ex) {
         final String message = messageResourceService.getMessage(ex.getMessage());
         ErrorResponse errorResponse = new ErrorResponse(message, HttpStatus.NOT_FOUND.value());
 
@@ -65,15 +70,15 @@ public class DefaultExceptionManagement extends RuntimeException {
         return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
     }
 
-    @ExceptionHandler(value = {NullPointerException.class})
-    public ResponseEntity<ErrorResponse> handleNullPointerException(NullPointerException ex) {
+    @ExceptionHandler(value = {com.pundix.exception.common.NullPointerException.class})
+    public ResponseEntity<ErrorResponse> handleNullPointerException(com.pundix.exception.common.NullPointerException ex) {
         final String message = messageResourceService.getMessage(ex.getMessage());
         ErrorResponse errorResponse = new ErrorResponse(message, HttpStatus.INTERNAL_SERVER_ERROR.value());
 
         return new ResponseEntity<>(errorResponse, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
-    @ExceptionHandler(value = {IllegalStateException.class})
+    @ExceptionHandler(value = {com.pundix.exception.common.IllegalStateException.class})
     public ResponseEntity<ErrorResponse> handleIllegalStateException(IllegalStateException ex) {
         final String message = messageResourceService.getMessage(ex.getMessage());
         ErrorResponse errorResponse = new ErrorResponse(message, HttpStatus.INTERNAL_SERVER_ERROR.value());

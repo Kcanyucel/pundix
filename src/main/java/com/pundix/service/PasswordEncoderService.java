@@ -8,7 +8,6 @@ import org.springframework.stereotype.Service;
 public class PasswordEncoderService {
 
     public String encodePassword(String password) {
-        password = "*#_3AF&d*C9@5ga" + password;
         return Base64.encodeBase64String(DigestUtils.getSha512Digest().digest(password.getBytes()));
     }
 }
