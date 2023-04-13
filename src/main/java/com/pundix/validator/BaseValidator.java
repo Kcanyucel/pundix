@@ -1,7 +1,7 @@
 package com.pundix.validator;
 
 import com.pundix.entity.user.User;
-import com.pundix.exception.BadRequestExpection;
+import com.pundix.exception.common.BadRequestExpection;
 import com.pundix.exception.custom.UserNotFoundException;
 import org.springframework.stereotype.Component;
 
@@ -28,6 +28,12 @@ public class BaseValidator {
 
     public void validateIsBlank(String value, String errorMessage) {
         if (value.isBlank()) {
+            throw new BadRequestExpection(errorMessage);
+        }
+    }
+
+    public void validateBlank(String value, String errorMessage) {
+        if (!value.isBlank()) {
             throw new BadRequestExpection(errorMessage);
         }
     }

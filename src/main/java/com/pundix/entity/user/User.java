@@ -1,21 +1,14 @@
 package com.pundix.entity.user;
 
+import com.pundix.entity.BaseEntity;
 import jakarta.persistence.*;
-import lombok.*;
 
 import java.time.LocalDateTime;
 
-@Data
-@Builder
-@AllArgsConstructor
-@NoArgsConstructor
 @Entity
 @Table(name = "\"user\"")
-public class User {
-
-    @Id
-    @GeneratedValue(generator = "ID_GENERATOR", strategy = GenerationType.SEQUENCE)
-    private Long id;
+@SequenceGenerator(name = "id_generator", sequenceName = "seq_user")
+public class User extends BaseEntity {
 
     @Column(name = "USERNAME", nullable = false)
     private String username;
@@ -43,4 +36,69 @@ public class User {
     @Enumerated(EnumType.STRING)
     @Column(name = "ROLE")
     private UserRole userRole;
+
+    public String getUsername() {
+        return username;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public String getSurname() {
+        return surname;
+    }
+
+    public LocalDateTime getCreatedDate() {
+        return createdDate;
+    }
+
+    public UserStatus getUserStatus() {
+        return userStatus;
+    }
+
+    public UserRole getUserRole() {
+        return userRole;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public void setEmail(String email) {
+        this.email = email.toLowerCase();
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setSurname(String surname) {
+        this.surname = surname;
+    }
+
+    public void setCreatedDate(LocalDateTime createdDate) {
+        this.createdDate = createdDate;
+    }
+
+    public void setUserStatus(UserStatus userStatus) {
+        this.userStatus = userStatus;
+    }
+
+    public void setUserRole(UserRole userRole) {
+        this.userRole = userRole;
+    }
 }
+

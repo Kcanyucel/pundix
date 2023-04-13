@@ -1,4 +1,4 @@
-package com.pundix.exception;
+package com.pundix.exception.common;
 
 public class NullPointerException extends RuntimeException{
 

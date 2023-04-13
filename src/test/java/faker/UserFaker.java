@@ -1,34 +1,37 @@
-package faker.user;
+package faker;
 
 import com.pundix.entity.user.User;
+import com.pundix.entity.user.UserRole;
 import com.pundix.entity.user.UserStatus;
+import com.pundix.entity.builder.UserBuilder;
 
 import java.time.LocalDateTime;
 
 public class UserFaker {
 
-    public static final Long ID = 1L;
     public static final String USERNAME = "Jameswilliam";
     public static final String PASSWORD = "james87";
     public static final String EMAIL = "james_william87@outlook.com";
     public static final String NAME = "James";
     public static final String SURNAME = "William";
+    public static final UserStatus USER_STATUS = UserStatus.ACTIVE;
+    public static final LocalDateTime CREATED_DATE = LocalDateTime.now();
+    public static final UserRole USER_ROLE = UserRole.COSTUMER;
     public static final String UPDATE_PREFIX = "Updated_";
 
-    public static User generate() {
-        return User.builder()
-            .id(ID)
+    public static User create() {
+
+        return new UserBuilder()
             .username(USERNAME)
             .password(PASSWORD)
             .email(EMAIL)
             .name(NAME)
             .surname(SURNAME)
-            .userStatus(UserStatus.ACTIVE)
-            .createdDate(LocalDateTime.now())
+            .createdDate(CREATED_DATE)
+            .userRole(USER_ROLE)
             .build();
     }
 }
-
 
 
 

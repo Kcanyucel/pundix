@@ -10,7 +10,7 @@ import com.pundix.repository.UserSessionInfoRepository;
 import com.pundix.request.UserCreateRequest;
 import com.pundix.request.UserLoginRequest;
 import com.pundix.request.UserUpdateRequest;
-import com.pundix.response.user.*;
+import com.pundix.response.*;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -19,140 +19,84 @@ import java.util.Optional;
 @Service
 public class UserService {
 
-    private final TokenService tokenService;
-
-    private final PasswordEncoderService passwordEncoderService;
-
     private final MessageResourceService messageResourceService;
 
     private final UserRepository userRepository;
 
     private final UserSessionInfoRepository userSessionInfoRepository;
 
-    public UserService(PasswordEncoderService passwordEncoderService, MessageResourceService messageResourceService, TokenService tokenService, UserSessionInfoRepository userSessionInfoRepository, UserRepository userRepository) {
-        this.passwordEncoderService = passwordEncoderService;
+    private final EntityMapperService entityMapperService;
+
+    public UserService(MessageResourceService messageResourceService, UserRepository userRepository, UserSessionInfoRepository userSessionInfoRepository, EntityMapperService mapperService) {
         this.messageResourceService = messageResourceService;
         this.userRepository = userRepository;
         this.userSessionInfoRepository = userSessionInfoRepository;
-        this.tokenService = tokenService;
+        this.entityMapperService = mapperService;
+
     }
 
-    public UserCreateResponse createUser(UserCreateRequest userRequest) {
-        String encodedpassword = passwordEncoderService.encodePassword(userRequest.getPassword());
-
-        User user = User.builder()
-            .username(userRequest.getUsername().toLowerCase())
-            .password(encodedpassword)
-            .email(userRequest.getEmail().toLowerCase())
-            .name(userRequest.getName())
-            .surname(userRequest.getSurname())
-            .createdDate(LocalDateTime.now())
-            .userStatus(UserStatus.ACTIVE)
-            .build();
+    public UserCreateResponse createUser(UserCreateRequest userCreateRequest) {
+        User user = entityMapperService.createUser(userCreateRequest);
         userRepository.save(user);
 
-        UserSessionInfo userSessionInfo = UserSessionInfo.builder()
-            .userId(user.getId())
-            .username(user.getUsername().toLowerCase())
-            .accessToken(tokenService.createAccessToken())
-            .loginDate(LocalDateTime.now())
-            .build();
+        UserSessionInfo userSessionInfo = entityMapperService.createOrLoginUserSession(user.getId(), user.getUsername());
         userSessionInfoRepository.save(userSessionInfo);
 
-        return new UserCreateResponse(user.getId(), user.getUsername(), user.getEmail(), userSessionInfo.getAccessToken());
+        return UserCreateResponse.create(user.getId(), user.getUsername(), user.getEmail(), userSessionInfo.getAccessToken(), user.getCreatedDate());
     }
 
     public UserLoginResponse loginUser(UserLoginRequest userLoginRequest) {
-        Optional<User> user = findUserByUsername(userLoginRequest.getUsername());
+        User user = findUserByUsername(userLoginRequest.getUsername()).orElseThrow(new UserNotFoundException());
 
-        if (user.isEmpty()) {
-            throw new UserNotFoundException();
-        }
-        UserSessionInfo userSessionInfo = UserSessionInfo.builder()
-            .userId(user.get().getId())
-            .username(user.get().getUsername().toLowerCase())
-            .accessToken(tokenService.createAccessToken())
-            .loginDate(LocalDateTime.now())
-            .build();
+        UserSessionInfo userSessionInfo = entityMapperService.createOrLoginUserSession(user.getId(), user.getUsername());
         userSessionInfoRepository.save(userSessionInfo);
 
-        return new UserLoginResponse(messageResourceService.getMessage("user.is.login"), userSessionInfo.getAccessToken());
+        return UserLoginResponse.create(messageResourceService.getMessage("user.is.login"), userSessionInfo.getLoginDate());
     }
 
     public UserLogoutResponse logoutUser(String accessToken) {
-        Optional<UserSessionInfo> sessionInfo = findUserSessionInfoByAccessToken(accessToken);
+        UserSessionInfo userSessionInfo = findUserSessionInfoByAccessToken(accessToken).orElseThrow(UserSessionInfoNotFoundException::new);
 
-        if (sessionInfo.isEmpty()) {
-            throw new UserSessionInfoNotFoundException();
-        }
-        UserSessionInfo userSessionInfoAfterLogout = UserSessionInfo.builder()
-            .loginDate(sessionInfo.get().getLoginDate())
-            .id(sessionInfo.get().getId())
-            .userId(sessionInfo.get().getUserId())
-            .username(sessionInfo.get().getUsername())
-            .logoutDate(LocalDateTime.now())
-            .accessToken(null)
-            .build();
-        userSessionInfoRepository.save(userSessionInfoAfterLogout);
+        entityMapperService.logoutUserSession(userSessionInfo.getUserId(), userSessionInfo.getUsername());
+        userSessionInfoRepository.save(userSessionInfo);
 
-        return new UserLogoutResponse(messageResourceService.getMessage("user.is.logout"), sessionInfo.get().getUsername());
+        return UserLogoutResponse.create(messageResourceService.getMessage("user.is.logout"), userSessionInfo.getUsername(), userSessionInfo.getLogoutDate());
     }
 
-
     public UserInfoResponse getUser(Long id) {
-        Optional<User> user = findUserById(id);
+        User user = findUserById(id).orElseThrow(UserNotFoundException::new);
 
-        if (user.isEmpty()) {
-            throw new UserNotFoundException();
-        }
-        User foundUser = user.get();
-
-        return new UserInfoResponse(foundUser.getId(), foundUser.getUsername(), foundUser.getEmail(), foundUser.getName(), foundUser.getSurname());
+        return UserInfoResponse.create(user.getId(), user.getUsername(), user.getEmail(), user.getName(), user.getSurname());
     }
 
     public UserDeleteResponse deleteUser(Long id) {
-        Optional<User> user = findUserById(id);
+        User user = findUserById(id).orElseThrow(UserNotFoundException::new);
 
-        if (user.isEmpty()) {
-            throw new UserNotFoundException();
-        }
-        User userToBeDeleted = user.get();
         userRepository.deleteById(id);
-        userSessionInfoRepository.deleteUserSessionInfoByUserId(user.get().getId());
+        userSessionInfoRepository.deleteUserSessionInfoByUserId(id);
 
-        return new UserDeleteResponse(messageResourceService.getMessage("user.is.deleted"), userToBeDeleted.getUsername());
+        return UserDeleteResponse.create(messageResourceService.getMessage("user.is.deleted"), user.getUsername(), LocalDateTime.now());
     }
 
     public UserCloseResponse closeUser(Long id) {
-        Optional<User> user = findUserById(id);
+        User user = findUserById(id).orElseThrow(UserNotFoundException::new);
+        user.setUserStatus(UserStatus.CLOSED);
 
-        if (user.isEmpty()) {
-            throw new UserNotFoundException();
-        }
-        User closedUser = user.get();
-        closedUser.setUserStatus(UserStatus.CLOSED);
-        userRepository.save(closedUser);
-        userSessionInfoRepository.closeSessionByUserId(closedUser.getId());
+        userRepository.save(user);
+        userSessionInfoRepository.closeUserSessionByUserId(user.getId());
 
-        return new UserCloseResponse(messageResourceService.getMessage("user.is.closed"), closedUser.getUsername());
+        return UserCloseResponse.create(messageResourceService.getMessage("user.is.closed"), user.getUsername(), LocalDateTime.now());
     }
 
     public UserUpdateResponse updateUser(Long id, UserUpdateRequest userUpdateRequest) {
-        String encodedpassword = passwordEncoderService.encodePassword(userUpdateRequest.getPassword());
-        Optional<User> user = findUserById(id);
+        findUserById(id).orElseThrow(UserNotFoundException::new);
+        User user = entityMapperService.updateUser(userUpdateRequest);
+        userRepository.save(user);
 
-        if (user.isEmpty()) {
-            throw new UserNotFoundException();
-        }
-        User updatedUser = User.builder()
-            .username(user.get().getUsername())
-            .password(encodedpassword)
-            .email(userUpdateRequest.getEmail())
-            .name(userUpdateRequest.getName())
-            .surname(userUpdateRequest.getSurname()).build();
-        userRepository.save(updatedUser);
+        UserSessionInfo userSessionInfo = entityMapperService.updateUserSession(user.getId(), user.getUsername());
+        userSessionInfoRepository.save(userSessionInfo);
 
-        return new UserUpdateResponse(messageResourceService.getMessage("user.is.updated"), updatedUser.getUsername());
+        return UserUpdateResponse.create(messageResourceService.getMessage("user.is.updated"), user.getUsername(), LocalDateTime.now());
     }
 
     public Optional<User> findUserById(Long id) {

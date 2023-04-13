@@ -1,16 +1,21 @@
 package com.pundix.response;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.Setter;
-
-@Getter
-@Setter
-@AllArgsConstructor
 public class ErrorResponse {
 
-    private String message;
-    private int errorCode;
+    private final String message;
+    private final int errorCode;
 
+    public ErrorResponse(String message, int errorCode) {
+        this.message = message;
+        this.errorCode = errorCode;
+    }
+
+    public String getMessage() {
+        return message;
+    }
+
+    public int getErrorCode() {
+        return errorCode;
+    }
 }
 
