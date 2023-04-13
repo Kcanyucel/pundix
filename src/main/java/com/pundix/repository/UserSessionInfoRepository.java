@@ -6,18 +6,21 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.util.List;
 import java.util.Optional;
 
 public interface UserSessionInfoRepository extends JpaRepository<UserSessionInfo, Long> {
 
     Optional<UserSessionInfo> findUserSessionInfoByUserId(Long id);
 
-    Optional<UserSessionInfo> deleteUserSessionInfoByUserId(Long userId);
-
     Optional<UserSessionInfo> findUserSessionInfoByAccessToken(String accessToken);
 
+    List<UserSessionInfo> findUserSessionsInfoByUserId(Long userId);
+
+    void deleteUserSessionsInfoByUserId(Long userId);
+
     @Modifying
-    @Query("UPDATE UserSessionInfo u SET u.accessToken = null WHERE u.userId = :userId")
-    void closeUserSessionByUserId(@Param("userId") Long userId);
+    @Query("UPDATE UserSessionInfo u SET u.logoutDate = CURRENT_TIMESTAMP WHERE u.userId = :userId")
+    void closeUserSessionsInfoByUserId(@Param("userId") Long userId);
 
 }
