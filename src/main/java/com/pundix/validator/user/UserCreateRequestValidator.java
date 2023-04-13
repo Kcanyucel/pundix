@@ -26,8 +26,8 @@ public class UserCreateRequestValidator extends BaseValidator {
         validateUsername(userCreateRequest.getUsername());
         validateEmail(userCreateRequest.getEmail());
         validatePassword(userCreateRequest.getPassword());
-        //    validateName(userCreateRequest.getName());
-        //    validateSurname(userCreateRequest.getSurname());
+        validateName(userCreateRequest.getName());
+        validateSurname(userCreateRequest.getSurname());
     }
 
     public void validateUsername(String username) {
@@ -57,13 +57,13 @@ public class UserCreateRequestValidator extends BaseValidator {
     }
 
     public void validateName(String name) {
-        if (!name.isBlank()) {
+        if (name != null) {
             validateLetter(name, messageResourceService.getMessage("error.user.name.non.letter"));
         }
     }
 
     public void validateSurname(String surname) {
-        if (!surname.isBlank()) {
+        if (surname != null) {
             validateLetter(surname, messageResourceService.getMessage("error.user.surname.non.letter"));
         }
     }

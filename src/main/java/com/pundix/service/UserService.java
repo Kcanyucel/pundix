@@ -11,9 +11,11 @@ import com.pundix.request.UserCreateRequest;
 import com.pundix.request.UserLoginRequest;
 import com.pundix.request.UserUpdateRequest;
 import com.pundix.response.*;
+import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -32,72 +34,75 @@ public class UserService {
         this.userRepository = userRepository;
         this.userSessionInfoRepository = userSessionInfoRepository;
         this.entityMapperService = mapperService;
-
     }
 
+    @Transactional
     public UserCreateResponse createUser(UserCreateRequest userCreateRequest) {
         User user = entityMapperService.createUser(userCreateRequest);
         userRepository.save(user);
 
-        UserSessionInfo userSessionInfo = entityMapperService.createOrLoginUserSession(user.getId(), user.getUsername());
+        UserSessionInfo userSessionInfo = entityMapperService.createUserSession(user.getId(), user.getUsername());
         userSessionInfoRepository.save(userSessionInfo);
 
         return UserCreateResponse.create(user.getId(), user.getUsername(), user.getEmail(), userSessionInfo.getAccessToken(), user.getCreatedDate());
     }
 
-    public UserLoginResponse loginUser(UserLoginRequest userLoginRequest) {
-        User user = findUserByUsername(userLoginRequest.getUsername()).orElseThrow(new UserNotFoundException());
+    public UserUpdateResponse updateUser(Long id, UserUpdateRequest userUpdateRequest) {
+        User user = userRepository.findUserById(id).orElseThrow(UserNotFoundException::new);
+        entityMapperService.updateUser(user, userUpdateRequest);
+        userRepository.save(user);
 
-        UserSessionInfo userSessionInfo = entityMapperService.createOrLoginUserSession(user.getId(), user.getUsername());
+        return UserUpdateResponse.create(messageResourceService.getMessage("user.is.updated"), user.getUsername(), LocalDateTime.now());
+    }
+
+    public UserInfoResponse getUser(Long id) {
+        User user = userRepository.findUserById(id).orElseThrow(UserNotFoundException::new);
+
+        return UserInfoResponse.create(user.getId(), user.getUsername(), user.getEmail(), user.getName(), user.getSurname());
+    }
+
+    public UserLoginResponse loginUser(UserLoginRequest userLoginRequest) {
+        User user = userRepository.findUserByUsername(userLoginRequest.getUsername()).orElseThrow(new UserNotFoundException());
+
+        UserSessionInfo userSessionInfo = entityMapperService.createUserSession(user.getId(), user.getUsername());
         userSessionInfoRepository.save(userSessionInfo);
 
         return UserLoginResponse.create(messageResourceService.getMessage("user.is.login"), userSessionInfo.getLoginDate());
     }
 
     public UserLogoutResponse logoutUser(String accessToken) {
-        UserSessionInfo userSessionInfo = findUserSessionInfoByAccessToken(accessToken).orElseThrow(UserSessionInfoNotFoundException::new);
-
-        entityMapperService.logoutUserSession(userSessionInfo.getUserId(), userSessionInfo.getUsername());
+        UserSessionInfo userSessionInfo = userSessionInfoRepository.findUserSessionInfoByAccessToken(accessToken).orElseThrow(UserSessionInfoNotFoundException::new);
+        userSessionInfo.setLogoutDate(LocalDateTime.now());
         userSessionInfoRepository.save(userSessionInfo);
 
         return UserLogoutResponse.create(messageResourceService.getMessage("user.is.logout"), userSessionInfo.getUsername(), userSessionInfo.getLogoutDate());
     }
 
-    public UserInfoResponse getUser(Long id) {
-        User user = findUserById(id).orElseThrow(UserNotFoundException::new);
-
-        return UserInfoResponse.create(user.getId(), user.getUsername(), user.getEmail(), user.getName(), user.getSurname());
-    }
-
+    @Transactional
     public UserDeleteResponse deleteUser(Long id) {
-        User user = findUserById(id).orElseThrow(UserNotFoundException::new);
-
+        User user = userRepository.findUserById(id).orElseThrow(UserNotFoundException::new);
         userRepository.deleteById(id);
-        userSessionInfoRepository.deleteUserSessionInfoByUserId(id);
+
+        Optional.ofNullable(userSessionInfoRepository.findUserSessionsInfoByUserId(id)).filter(userSessionInfos -> !userSessionInfos.isEmpty()).orElseThrow(UserSessionInfoNotFoundException::new);
+        userSessionInfoRepository.deleteUserSessionsInfoByUserId(id);
 
         return UserDeleteResponse.create(messageResourceService.getMessage("user.is.deleted"), user.getUsername(), LocalDateTime.now());
     }
 
+    @Transactional
     public UserCloseResponse closeUser(Long id) {
-        User user = findUserById(id).orElseThrow(UserNotFoundException::new);
+        User user = userRepository.findUserById(id).orElseThrow(UserNotFoundException::new);
         user.setUserStatus(UserStatus.CLOSED);
-
         userRepository.save(user);
-        userSessionInfoRepository.closeUserSessionByUserId(user.getId());
+
+        Optional.ofNullable(userSessionInfoRepository.findUserSessionsInfoByUserId(id)).filter(userSessionInfos -> !userSessionInfos.isEmpty()).orElseThrow(UserSessionInfoNotFoundException::new);
+        userSessionInfoRepository.closeUserSessionsInfoByUserId(id);
 
         return UserCloseResponse.create(messageResourceService.getMessage("user.is.closed"), user.getUsername(), LocalDateTime.now());
     }
 
-    public UserUpdateResponse updateUser(Long id, UserUpdateRequest userUpdateRequest) {
-        findUserById(id).orElseThrow(UserNotFoundException::new);
-        User user = entityMapperService.updateUser(userUpdateRequest);
-        userRepository.save(user);
 
-        UserSessionInfo userSessionInfo = entityMapperService.updateUserSession(user.getId(), user.getUsername());
-        userSessionInfoRepository.save(userSessionInfo);
-
-        return UserUpdateResponse.create(messageResourceService.getMessage("user.is.updated"), user.getUsername(), LocalDateTime.now());
-    }
+    //TODO:Böyle mi tutmalıyım yoksa direk yazmalımıyım ?
 
     public Optional<User> findUserById(Long id) {
         return userRepository.findUserById(id);
@@ -109,6 +114,18 @@ public class UserService {
 
     public Optional<UserSessionInfo> findUserSessionInfoByAccessToken(String accessToken) {
         return userSessionInfoRepository.findUserSessionInfoByAccessToken(accessToken);
+    }
+
+    public List<UserSessionInfo> findUserSessionsInfoByUserId(Long userId) {
+        return userSessionInfoRepository.findUserSessionsInfoByUserId(userId);
+    }
+
+    public void deleteUserSessionsInfoByUserId(Long userId) {
+        userSessionInfoRepository.deleteUserSessionsInfoByUserId(userId);
+    }
+
+    public void closeUserSessionsInfoByUserId(Long userId) {
+        userSessionInfoRepository.closeUserSessionsInfoByUserId(userId);
     }
 
     public boolean existsByEmail(String email) {

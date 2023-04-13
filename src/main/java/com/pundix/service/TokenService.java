@@ -12,6 +12,6 @@ public class TokenService {
     }
 
     private String generateToken() {
-        return UUID.randomUUID().toString() + UUID.randomUUID().toString();
+        return UUID.randomUUID() + UUID.randomUUID().toString();
     }
 }

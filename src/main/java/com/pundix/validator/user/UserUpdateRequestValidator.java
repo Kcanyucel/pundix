@@ -44,14 +44,14 @@ public class UserUpdateRequestValidator extends BaseValidator {
     }
 
     public void validateName(String name) {
-        if (!name.isBlank()) {
+        if (name != null) {
             validateLetter(name, messageResourceService.getMessage("error.user.name.non.letter"));
         }
     }
 
     public void validateSurname(String surname) {
-        if (!surname.isBlank()) {
-            validateLetter(surname, messageResourceService.getMessage("error.user.name.non.letter"));
+        if (surname != null) {
+            validateLetter(surname, messageResourceService.getMessage("error.user.surname.non.letter"));
         }
     }
 }

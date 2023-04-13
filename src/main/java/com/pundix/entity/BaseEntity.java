@@ -1,11 +1,7 @@
 package com.pundix.entity;
 
-import jakarta.persistence.Id;
-import jakarta.persistence.MappedSuperclass;
+import jakarta.persistence.*;
 
-import javax.persistence.Column;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
 import java.io.Serializable;
 
 @MappedSuperclass
@@ -15,7 +11,7 @@ public abstract class BaseEntity implements Serializable {
 
     @Id
     @GeneratedValue(generator = "id_generator", strategy = GenerationType.SEQUENCE)
-    @Column(name = "id")
+    @Column(name = "ID")
     private Long id;
 
     public Long getId() {

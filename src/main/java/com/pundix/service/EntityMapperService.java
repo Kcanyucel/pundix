@@ -37,16 +37,7 @@ public class EntityMapperService {
             .build();
     }
 
-    public User updateUser(UserUpdateRequest userUpdateRequest) {
-        return new UserBuilder()
-            .username(userUpdateRequest.getEmail().toLowerCase())
-            .password(passwordEncoderService.encodePassword(userUpdateRequest.getPassword()))
-            .name(userUpdateRequest.getName())
-            .surname(userUpdateRequest.getSurname())
-            .build();
-    }
-
-    public UserSessionInfo createOrLoginUserSession(Long id, String username) {
+    public UserSessionInfo createUserSession(Long id, String username) {
         return new UserSessionInfoBuilder()
             .userId(id)
             .username(username)
@@ -55,19 +46,17 @@ public class EntityMapperService {
             .build();
     }
 
-    public UserSessionInfo updateUserSession(Long id, String username) {
-        return new UserSessionInfoBuilder()
-            .userId(id)
-            .username(username)
-            .build();
+    public void updateUser(User user, UserUpdateRequest userUpdateRequest) {
+        user.setEmail(userUpdateRequest.getEmail().toLowerCase());
+        user.setPassword(passwordEncoderService.encodePassword(userUpdateRequest.getPassword()));
+        user.setName(userUpdateRequest.getName());
+        user.setSurname(userUpdateRequest.getSurname());
+
     }
 
-    public UserSessionInfo logoutUserSession(Long id, String username) {
-        return new UserSessionInfoBuilder()
-            .userId(id)
-            .username(username)
-            .accessToken(null)
-            .logoutDate(LocalDateTime.now())
-            .build();
+    public void closeUserSession(UserSessionInfo userSessionInfo) {
+
+
+
     }
 }

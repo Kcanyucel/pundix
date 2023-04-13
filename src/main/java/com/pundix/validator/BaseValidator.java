@@ -88,7 +88,7 @@ public class BaseValidator {
     }
 
     public void validateLetter(String value, String errorMessage) {
-        validateRegex(value, "^[a-zA-Z]+$", errorMessage);
+        validateRegex(value, "^[A-Za-zÇçĞğİıÖöŞşÜü\\s]*$", errorMessage);
     }
 
     public void validateUserEmpty(Optional<User> user){
