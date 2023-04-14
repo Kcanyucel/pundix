@@ -1,9 +1,7 @@
-package faker;
+package com.pundix.faker;
 
-import com.pundix.entity.user.User;
 import com.pundix.entity.user.UserRole;
 import com.pundix.entity.user.UserStatus;
-import com.pundix.entity.builder.UserBuilder;
 
 import java.time.LocalDateTime;
 
@@ -19,17 +17,9 @@ public class UserFaker {
     public static final UserRole USER_ROLE = UserRole.COSTUMER;
     public static final String UPDATE_PREFIX = "Updated_";
 
-    public static User create() {
+    public UserFaker create() {
+        return this;
 
-        return new UserBuilder()
-            .username(USERNAME)
-            .password(PASSWORD)
-            .email(EMAIL)
-            .name(NAME)
-            .surname(SURNAME)
-            .createdDate(CREATED_DATE)
-            .userRole(USER_ROLE)
-            .build();
     }
 }
 

@@ -1,33 +1,19 @@
-package service;
+package com.pundix.service;
 
 import com.pundix.entity.user.User;
-import com.pundix.entity.user.UserSessionInfo;
-import com.pundix.entity.user.UserStatus;
+import com.pundix.entity.user.session.UserSession;
 import com.pundix.repository.UserRepository;
-import com.pundix.repository.UserSessionInfoRepository;
-import com.pundix.request.UserCreateRequest;
-import com.pundix.request.UserLoginRequest;
-import com.pundix.request.UserUpdateRequest;
-import com.pundix.response.*;
-import com.pundix.service.*;
-import faker.UserFaker;
-import faker.UserRequestFaker;
-import faker.UserSessionInfoFaker;
-import org.junit.jupiter.api.Test;
+import com.pundix.repository.UserSessionRepository;
+import com.pundix.service.user.UserInfoService;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.*;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-import java.util.Optional;
-
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.*;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 @ExtendWith(SpringExtension.class)
 public class UserServiceTest {
@@ -36,7 +22,7 @@ public class UserServiceTest {
     UserRepository userRepository;
 
     @Mock
-    UserSessionInfoRepository userSessionInfoRepository;
+    UserSessionRepository userSessionInfoRepository;
 
     @Mock
     private PasswordEncoderService passwordEncoderService;
@@ -47,17 +33,15 @@ public class UserServiceTest {
     @Mock
     private TokenService tokenService;
 
-    @Mock
-    private EntityMapperService userMapperService;
 
     @InjectMocks
-    UserService userService;
+    UserInfoService userService;
 
     @Captor
     private ArgumentCaptor<User> userCaptor;
 
     @Captor
-    private ArgumentCaptor<UserSessionInfo> userSessionInfoCaptor;
+    private ArgumentCaptor<UserSession> userSessionInfoCaptor;
 
     private final String MOCK_PASSWORD = "password";
     private final String MOCK_ACCESS_TOKEN = "accessToken";

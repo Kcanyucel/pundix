@@ -1,100 +1,90 @@
 package com.pundix.validator;
 
-import com.pundix.entity.user.User;
-import com.pundix.exception.common.BadRequestExpection;
-import com.pundix.exception.custom.UserNotFoundException;
+import com.pundix.exception.common.ValidationException;
 import org.springframework.stereotype.Component;
 
 import java.util.Objects;
-
-import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 @Component
 public class BaseValidator {
 
-    public void validateNotNull(Object value, String errorMessage) {
+    public void validateNotNull(Object value, String messageKey) {
         if (Objects.isNull(value)) {
-            throw new BadRequestExpection(errorMessage);
+            throw new ValidationException(messageKey);
         }
     }
 
-    public void validateNull(Object value, String errorMessage) {
+    public void validateNull(Object value, String messageKey) {
         if (!Objects.isNull(value)) {
-            throw new BadRequestExpection(errorMessage);
+            throw new ValidationException(messageKey);
         }
     }
 
-    public void validateIsBlank(String value, String errorMessage) {
+    public void validateIsBlank(String value, String messageKey) {
         if (value.isBlank()) {
-            throw new BadRequestExpection(errorMessage);
+            throw new ValidationException(messageKey);
         }
     }
 
-    public void validateBlank(String value, String errorMessage) {
+    public void validateBlank(String value, String messageKey) {
         if (!value.isBlank()) {
-            throw new BadRequestExpection(errorMessage);
+            throw new ValidationException(messageKey);
         }
     }
 
-    public void validateFalse(boolean condition, String errorMessage) {
+    public void validateFalse(boolean condition, String messageKey) {
         if (condition) {
-            throw new BadRequestExpection(errorMessage);
+            throw new ValidationException(messageKey);
         }
     }
 
-    public void validateTrue(boolean condition, String errorMessage) {
+    public void validateTrue(boolean condition, String messageKey) {
         if (!condition) {
-            throw new BadRequestExpection(errorMessage);
+            throw new ValidationException(messageKey);
         }
     }
 
-    public void validateMoreThanOrEquals(Comparable value, Comparable limit, String errorMessage) {
-        if (limit.compareTo(value) > 0) {
-            throw new BadRequestExpection(errorMessage);
+    public void validateMoreThanOrEquals(String value, String limit, String messageKey) {
+        int valueLength = value.length();
+        int parseLimit = Integer.parseInt(limit);
+
+        if (valueLength < parseLimit) {
+            throw new ValidationException(messageKey, limit);
         }
     }
 
-    public void validateLessThanOrEquals(Comparable value, Comparable limit, String errorMessage) {
-        if (value.compareTo(limit) > 0) {
-            throw new BadRequestExpection(errorMessage);
+    public void validateLessThanOrEquals(String value, String limit, String messageKey) {
+        int valueLength = value.length();
+        int parseLimit = Integer.parseInt(limit);
+
+        if (valueLength > parseLimit) {
+            throw new ValidationException(messageKey, limit);
         }
     }
 
-    public void validateLengthBetweenInclusive(String value, int lowerLimit, int upperLimit, String errorMessage) {
-        int length = value.length();
-        validateMoreThanOrEquals(length, lowerLimit, errorMessage);
-        validateLessThanOrEquals(length, upperLimit, errorMessage);
-    }
-
-    public void validateRegex(String value, String regexPattern, String errorMessage) {
+    public void validateRegex(String value, String regexPattern, String messageKey) {
         Pattern pattern = Pattern.compile(regexPattern);
         Matcher matcher = pattern.matcher(value);
 
         if (!matcher.matches()) {
-            throw new BadRequestExpection(errorMessage);
+            throw new ValidationException(messageKey);
         }
     }
 
-    public void validateNoSpace(String value, String errorMessage) {
+    public void validateNoSpace(String value, String messageKey) {
         if (value.contains(" ")) {
-            throw new BadRequestExpection(errorMessage);
+            throw new ValidationException(messageKey);
         }
     }
 
-    public void validateNoSpecialCharactersOrTurkishCharacter(String value, String errorMessage) {
-        validateRegex(value, "^[a-zA-Z0-9]*$", errorMessage);
+    public void validateNoSpecialCharactersOrTurkishCharacter(String value, String messageKey) {
+        validateRegex(value, "^[a-zA-Z0-9]*$", messageKey);
     }
 
-    public void validateLetter(String value, String errorMessage) {
-        validateRegex(value, "^[A-Za-zÇçĞğİıÖöŞşÜü\\s]*$", errorMessage);
-    }
-
-    public void validateUserEmpty(Optional<User> user){
-        if (user.isEmpty()) {
-            throw new UserNotFoundException();
-        }
+    public void validateLetter(String value, String messageKey) {
+        validateRegex(value, "^[A-Za-zÇçĞğİıÖöŞşÜü\\s]*$", messageKey);
     }
 }
 
