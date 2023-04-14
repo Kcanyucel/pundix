@@ -27,15 +27,15 @@ public class User extends BaseEntity {
 
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "CREATED_DATE")
-    private LocalDateTime createdDate;
+    private LocalDateTime createdDate = LocalDateTime.now();
 
     @Enumerated(EnumType.STRING)
     @Column(name = "STATUS")
-    private UserStatus userStatus;
+    private UserStatus userStatus = UserStatus.ACTIVE;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "ROLE")
-    private UserRole userRole;
+    private UserRole userRole = UserRole.COSTUMER;
 
     public String getUsername() {
         return username;

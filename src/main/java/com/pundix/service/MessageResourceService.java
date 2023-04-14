@@ -1,6 +1,5 @@
 package com.pundix.service;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Service;
 
@@ -10,7 +9,6 @@ import java.util.Locale;
 @Service
 public class MessageResourceService implements Serializable {
 
-    @Autowired
     private final MessageSource messageSource;
 
     public MessageResourceService(MessageSource messageSource) {
@@ -21,7 +19,7 @@ public class MessageResourceService implements Serializable {
         return messageSource.getMessage(key, null, getLocale());
     }
 
-    public String getMessage(String key, Integer... params) {
+    public String getMessage(String key, Object... params) {
         return messageSource.getMessage(key, params, getLocale());
     }
 

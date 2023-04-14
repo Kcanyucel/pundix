@@ -1,4 +1,4 @@
-package com.pundix.entity.user;
+package com.pundix.entity.user.session;
 
 import com.pundix.entity.BaseEntity;
 import jakarta.persistence.Column;
@@ -9,9 +9,9 @@ import jakarta.persistence.Table;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "user_session_info")
-@SequenceGenerator(name = "id_generator", sequenceName = "seq_user_session_info")
-public class UserSessionInfo extends BaseEntity {
+@Table(name = "user_session")
+@SequenceGenerator(name = "id_generator", sequenceName = "seq_user_session")
+public class UserSession extends BaseEntity {
 
     @Column(name = "USER_ID", nullable = false)
     private Long userId;
