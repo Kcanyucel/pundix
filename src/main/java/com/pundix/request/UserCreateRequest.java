@@ -1,9 +1,20 @@
 package com.pundix.request;
 
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+
 public class UserCreateRequest {
 
+    @NotNull(message = "error.user.username.null")
+    @NotBlank(message = "error.user.username.empty")
     private String username;
+
+    @NotNull(message = "error.user.password.null")
+    @NotBlank(message = "error.user.password.empty")
     private String password;
+
+    @NotNull(message = "error.user.email.null")
+    @NotBlank(message = "error.user.email.empty")
     private String email;
     private String name;
     private String surname;

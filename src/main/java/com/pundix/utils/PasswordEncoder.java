@@ -1,13 +1,11 @@
-package com.pundix.service;
+package com.pundix.utils;
 
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.codec.digest.DigestUtils;
-import org.springframework.stereotype.Service;
 
-@Service
-public class PasswordEncoderService {
+public class PasswordEncoder {
 
-    public String encodePassword(String password) {
+    public static String encodePassword(String password) {
         return Base64.encodeBase64String(DigestUtils.getSha512Digest().digest(password.getBytes()));
     }
 }

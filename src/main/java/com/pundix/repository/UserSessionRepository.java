@@ -1,6 +1,6 @@
 package com.pundix.repository;
 
-import com.pundix.entity.user.session.UserSession;
+import com.pundix.entity.user.UserSession;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;

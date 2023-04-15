@@ -15,18 +15,18 @@ public class UserCreateRequestValidator extends BaseValidator {
     }
 
     public void validate(UserCreateRequest request) {
-        validateNotNull(request.getUsername(), "error.user.username.null");
-        validateIsBlank(request.getUsername(), "error.user.username.empty");
+  //      validateNotNull(request.getUsername(), "error.user.username.null");
+  //      validateIsBlank(request.getUsername(), "error.user.username.empty");
         validateNoSpecialCharactersOrTurkishCharacter(request.getUsername(), "error.user.username.contains.non.latin.or.special");
         validateMoreThanOrEquals(request.getUsername(),  configurationService.getValue("user.username.min.length"), "error.user.username.min.length");
         validateLessThanOrEquals(request.getUsername(), configurationService.getValue("user.username.max.length"), "error.user.username.max.length");
 
-        validateNotNull(request.getEmail(), "error.user.email.null");
-        validateIsBlank(request.getEmail(), "error.user.email.empty");
+        //     validateNotNull(request.getEmail(), "error.user.email.null");
+        //     validateIsBlank(request.getEmail(), "error.user.email.empty");
         validateRegex(request.getEmail(), "^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$", "error.user.email.invalid");
 
-        validateNotNull(request.getPassword(), "error.user.password.null");
-        validateIsBlank(request.getPassword(), "error.user.password.empty");
+        //    validateNotNull(request.getPassword(), "error.user.password.null");
+        //     validateIsBlank(request.getPassword(), "error.user.password.empty");
         validateNoSpecialCharactersOrTurkishCharacter(request.getPassword(), "error.user.password.contains.non.latin.or.special");
         validateMoreThanOrEquals(request.getPassword(), configurationService.getValue("user.password.min.length"), "error.user.password.min.length");
         validateLessThanOrEquals(request.getPassword(), configurationService.getValue("user.password.max.length"), "error.user.password.max.length");

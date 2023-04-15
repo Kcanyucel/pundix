@@ -1,23 +1,13 @@
 package com.pundix.response;
 
-import org.springframework.http.HttpStatus;
-
-public class ErrorResponse {
-
-    private final String message;
-    private final HttpStatus errorCode;
-
-    public ErrorResponse(String message, HttpStatus errorCode) {
-        this.message = message;
-        this.errorCode = errorCode;
-    }
+public record ErrorResponse(String message, int statusCode) {
 
     public String getMessage() {
         return message;
     }
 
-    public HttpStatus getHttpStatus() {
-        return errorCode;
+    public int getStatusCode() {
+        return statusCode;
     }
 }
 
