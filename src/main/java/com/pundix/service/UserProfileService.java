@@ -1,4 +1,4 @@
-package com.pundix.service.user;
+package com.pundix.service;
 
 import com.pundix.entity.user.User;
 import com.pundix.exception.custom.UserNotFoundException;
@@ -7,11 +7,11 @@ import com.pundix.response.UserInfoResponse;
 import org.springframework.stereotype.Service;
 
 @Service
-public class UserInfoService {
+public class UserProfileService {
 
     private final UserRepository userRepository;
 
-    public UserInfoService(UserRepository userRepository) {
+    public UserProfileService(UserRepository userRepository) {
         this.userRepository = userRepository;
     }
 

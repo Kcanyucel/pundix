@@ -2,15 +2,7 @@ package com.pundix.response;
 
 import java.time.LocalDateTime;
 
-public class UserLogoutResponse {
-
-    private final String message;
-    private final LocalDateTime logoutDate;
-
-    private UserLogoutResponse(String message, LocalDateTime logoutDate) {
-        this.message = message;
-        this.logoutDate = logoutDate;
-    }
+public record UserLogoutResponse(String message, LocalDateTime logoutDate) {
 
     public static UserLogoutResponse create(String message, LocalDateTime logoutDate) {
         return new UserLogoutResponse(message, logoutDate);

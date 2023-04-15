@@ -1,10 +1,11 @@
 package com.pundix.service;
 
 import com.pundix.entity.user.User;
-import com.pundix.entity.user.session.UserSession;
+import com.pundix.entity.user.UserSession;
 import com.pundix.repository.UserRepository;
 import com.pundix.repository.UserSessionRepository;
-import com.pundix.service.user.UserInfoService;
+import com.pundix.utils.PasswordEncoder;
+import com.pundix.utils.TokenGenerator;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.*;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
@@ -25,17 +26,16 @@ public class UserServiceTest {
     UserSessionRepository userSessionInfoRepository;
 
     @Mock
-    private PasswordEncoderService passwordEncoderService;
+    private PasswordEncoder passwordEncoderService;
 
     @Mock
     private MessageResourceService messageResourceService;
 
     @Mock
-    private TokenService tokenService;
+    private TokenGenerator tokenService;
 
 
-    @InjectMocks
-    UserInfoService userService;
+
 
     @Captor
     private ArgumentCaptor<User> userCaptor;

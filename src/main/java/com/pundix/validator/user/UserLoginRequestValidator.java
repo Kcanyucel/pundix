@@ -8,10 +8,10 @@ import org.springframework.stereotype.Component;
 public class UserLoginRequestValidator extends BaseValidator {
 
     public void validate(UserLoginRequest request) {
-        validateNotNull(request.getUsername(), "error.user.username.null");
-        validateIsBlank(request.getUsername(), "error.user.username.empty");
+    //    validateNotNull(request.getUsername(), "error.user.username.null");
+    //    validateIsBlank(request.getUsername(), "error.user.username.empty");
 
-        validateNotNull(request.getPassword(), "error.user.password.null");
-        validateIsBlank(request.getPassword(), "error.user.password.empty");
+    //    validateNotNull(request.getPassword(), "error.user.password.null");
+   //     validateIsBlank(request.getPassword(), "error.user.password.empty");
     }
 }

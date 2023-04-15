@@ -1,28 +1,25 @@
-package com.pundix.service.user.session;
+package com.pundix.service;
 
-import com.pundix.entity.user.session.UserSession;
+import com.pundix.entity.user.UserSession;
 import com.pundix.exception.custom.UserSessionInfoNotFoundException;
 import com.pundix.repository.UserSessionRepository;
-import com.pundix.service.TokenService;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
 public class UserSessionService {
 
     private final UserSessionRepository userSessionRepository;
-    private final TokenService tokenService;
 
-    public UserSessionService(UserSessionRepository userSessionInfoRepository, TokenService tokenService) {
+    public UserSessionService(UserSessionRepository userSessionInfoRepository) {
         this.userSessionRepository = userSessionInfoRepository;
-        this.tokenService = tokenService;
     }
 
     public UserSession create(Long id, String username) {
-        final UserSession userSessionInfo = build(id, username);
-        return userSessionRepository.save(userSessionInfo);
+        UserSession userSession = UserSession.create(id, username);
+
+        return userSessionRepository.save(userSession);
     }
 
     public UserSession logout(String accessToken) {
@@ -31,7 +28,7 @@ public class UserSessionService {
             throw new UserSessionInfoNotFoundException();
         }
         UserSession userSessionInfo = userSessionRepository.findUserSessionInfoByAccessToken(accessToken).get();
-        userSessionInfo.setLogoutDate(LocalDateTime.now());
+        UserSession.logout(userSessionInfo);
 
         return userSessionRepository.save(userSessionInfo);
     }
@@ -42,7 +39,7 @@ public class UserSessionService {
             throw new UserSessionInfoNotFoundException();
         }
         userSessions.forEach(userSession -> {
-            userSession.setLogoutDate(LocalDateTime.now());
+            UserSession.logout(userSession);
             userSessionRepository.save(userSession);
         });
     }
@@ -53,15 +50,5 @@ public class UserSessionService {
             throw new UserSessionInfoNotFoundException();
         }
         userSessionRepository.deleteUserSessionsInfoByUserId(id);
-    }
-
-    private UserSession build(Long id, String username) {
-        UserSession userSessionInfo = new UserSession();
-        userSessionInfo.setUserId(id);
-        userSessionInfo.setUsername(username);
-        userSessionInfo.setAccessToken(tokenService.createAccessToken());
-        userSessionInfo.setLoginDate(LocalDateTime.now());
-
-        return userSessionInfo;
     }
 }

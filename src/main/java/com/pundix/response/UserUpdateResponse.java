@@ -2,17 +2,8 @@ package com.pundix.response;
 
 import java.time.LocalDateTime;
 
-public class UserUpdateResponse {
-
-    private final String message;
-    private final String username;
-    private final LocalDateTime updatedDate;
-
-    private UserUpdateResponse(String message, String username, LocalDateTime updatedDate) {
-        this.message = message;
-        this.username = username;
-        this.updatedDate = updatedDate;
-    }
+public record UserUpdateResponse(String message, String username,
+                                 LocalDateTime updatedDate) {
 
     public static UserUpdateResponse create(String message, String username, LocalDateTime updatedDate) {
         return new UserUpdateResponse(message, username, updatedDate);

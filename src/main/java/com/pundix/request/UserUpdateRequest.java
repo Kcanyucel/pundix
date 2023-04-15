@@ -1,8 +1,16 @@
 package com.pundix.request;
 
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+
 public class UserUpdateRequest {
 
+    @NotNull(message = "error.user.email.null")
+    @NotBlank(message = "error.user.email.empty")
     private String email;
+
+    @NotNull(message = "error.user.password.null")
+    @NotBlank(message = "error.user.password.empty")
     private String password;
     private String name;
     private String surname;

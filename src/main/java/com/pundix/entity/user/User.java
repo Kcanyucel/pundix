@@ -1,6 +1,7 @@
 package com.pundix.entity.user;
 
 import com.pundix.entity.BaseEntity;
+import com.pundix.utils.PasswordEncoder;
 import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
@@ -27,15 +28,53 @@ public class User extends BaseEntity {
 
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "CREATED_DATE")
-    private LocalDateTime createdDate = LocalDateTime.now();
+    private LocalDateTime createdDate;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "STATUS")
-    private UserStatus userStatus = UserStatus.ACTIVE;
+    private UserStatus userStatus;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "ROLE")
-    private UserRole userRole = UserRole.COSTUMER;
+    private UserRole userRole;
+
+    private User() {
+    }
+
+    public static User create(String username, String password, String email, String name, String surname) {
+        User user = new User();
+        user.setUsername(username.toLowerCase());
+        user.setPassword(PasswordEncoder.encodePassword(password));
+        user.setEmail(email.toLowerCase());
+        user.setName(name);
+        user.setSurname(surname);
+        user.setUserRole(UserRole.COSTUMER);
+        user.setCreatedDate(LocalDateTime.now());
+        user.setUserStatus(UserStatus.ACTIVE);
+
+        return user;
+    }
+
+    public static User login(String username, String password) {
+        User user = new User();
+        user.setUsername(username.toLowerCase());
+        user.setPassword(PasswordEncoder.encodePassword(password));
+        return user;
+    }
+
+    public static User close(User user) {
+        user.setUserStatus(UserStatus.CLOSED);
+        user.setUsername("CLOSED||<-->" + LocalDateTime.now() + "<-->||" + user.getUsername());
+        return user;
+    }
+
+    public static User update(User user) {
+        user.setPassword(PasswordEncoder.encodePassword(user.getPassword()));
+        user.setEmail(user.getEmail().toLowerCase());
+        user.setName(user.getName());
+        user.setSurname(user.getSurname());
+        return user;
+    }
 
     public String getUsername() {
         return username;
@@ -69,35 +108,35 @@ public class User extends BaseEntity {
         return userRole;
     }
 
-    public void setUsername(String username) {
+    private void setUsername(String username) {
         this.username = username;
     }
 
-    public void setPassword(String password) {
+    private void setPassword(String password) {
         this.password = password;
     }
 
-    public void setEmail(String email) {
+    private void setEmail(String email) {
         this.email = email.toLowerCase();
     }
 
-    public void setName(String name) {
+    private void setName(String name) {
         this.name = name;
     }
 
-    public void setSurname(String surname) {
+    private void setSurname(String surname) {
         this.surname = surname;
     }
 
-    public void setCreatedDate(LocalDateTime createdDate) {
+    private void setCreatedDate(LocalDateTime createdDate) {
         this.createdDate = createdDate;
     }
 
-    public void setUserStatus(UserStatus userStatus) {
+    private void setUserStatus(UserStatus userStatus) {
         this.userStatus = userStatus;
     }
 
-    public void setUserRole(UserRole userRole) {
+    private void setUserRole(UserRole userRole) {
         this.userRole = userRole;
     }
 }

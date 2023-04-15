@@ -7,7 +7,7 @@ import java.util.function.Supplier;
 
 public class NotFoundException extends BaseException implements Supplier<NotFoundException> {
 
-    public NotFoundException(String errorMessage) {
+    public NotFoundException() {
         super("error.message", "Not Found Exception..!", HttpStatus.NOT_FOUND);
     }
 
