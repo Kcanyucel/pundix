@@ -42,16 +42,13 @@ public class UserSession extends BaseEntity {
         return userSession;
     }
 
-    public static UserSession logout(UserSession userSession) {
+    public static void logout(UserSession userSession) {
         userSession.setLogoutDate(LocalDateTime.now());
 
-        return userSession;
     }
 
-    public static UserSession close(UserSession userSession) {
+    public static void close(UserSession userSession) {
         userSession.setLogoutDate(LocalDateTime.now());
-
-        return userSession;
     }
 
     public Long getUserId() {

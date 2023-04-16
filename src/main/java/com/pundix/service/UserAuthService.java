@@ -23,7 +23,7 @@ public class UserAuthService {
     }
 
     public UserLoginResponse login(UserLoginRequest request) {
-        User user = User.login(request.getUsername(), request.getPassword());
+        User user = User.login(request.username(), request.password());
         boolean usernameOrPasswordExists = userRepository.existsByUsernameAndPassword(user.getUsername(), user.getPassword());
 
         if (!usernameOrPasswordExists) {
@@ -32,12 +32,12 @@ public class UserAuthService {
         User foundUser = userRepository.findUserByUsername(user.getUsername()).get();
         UserSession sessionInfo = userSessionService.create(foundUser.getId(), foundUser.getUsername());
 
-        return UserLoginResponse.create(messageResourceService.getMessage("user.is.login"), sessionInfo.getLoginDate());
+        return new UserLoginResponse(messageResourceService.getMessage("user.is.login"), sessionInfo.getLoginDate());
     }
 
     public UserLogoutResponse logout(String accessToken) {
         UserSession userSessionInfo = userSessionService.logout(accessToken);
 
-        return UserLogoutResponse.create(messageResourceService.getMessage("user.is.logout"), userSessionInfo.getLogoutDate());
+        return new UserLogoutResponse(messageResourceService.getMessage("user.is.logout"), userSessionInfo.getLogoutDate());
     }
 }

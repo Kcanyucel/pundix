@@ -11,6 +11,7 @@ import com.pundix.response.UserCloseResponse;
 import com.pundix.response.UserCreateResponse;
 import com.pundix.response.UserDeleteResponse;
 import com.pundix.response.UserUpdateResponse;
+import com.pundix.validator.UserManagementValidator;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
@@ -21,32 +22,38 @@ public class UserManagementService {
 
     private final UserRepository userRepository;
     private final UserSessionService userSessionService;
+    private final UserManagementValidator userManagementValidator;
     private final MessageResourceService messageResourceService;
 
-    public UserManagementService(UserRepository userRepository, UserSessionService userSessionInfoService, MessageResourceService messageResourceService) {
+    public UserManagementService(UserRepository userRepository,
+                                 UserSessionService userSessionInfoService,
+                                 UserManagementValidator userManagementValidator,
+                                 MessageResourceService messageResourceService) {
         this.userRepository = userRepository;
         this.userSessionService = userSessionInfoService;
+        this.userManagementValidator = userManagementValidator;
         this.messageResourceService = messageResourceService;
     }
 
     @Transactional
     public UserCreateResponse create(UserCreateRequest request) {
-        User user = User.create(request.getUsername(), request.getPassword(), request.getEmail(), request.getName(), request.getSurname());
+        userManagementValidator.validateForCreate(request);
 
-        boolean emailOrUsernameExists = userRepository.existsByEmailOrUsername(user.getEmail(), user.getUsername());
+        boolean emailOrUsernameExists = userRepository.existsByEmailOrUsername(request.email().toLowerCase(), request.username().toLowerCase());
         if (emailOrUsernameExists) {
             throw new UserAlreadyExistsException();
         }
-
+        User user = User.create(request.username(), request.password(), request.email(), request.name(), request.surname());
         User createdUser = userRepository.save(user);
         UserSession userSession = userSessionService.create(createdUser.getId(), createdUser.getUsername());
 
-        return UserCreateResponse.create(createdUser.getId(), createdUser.getUsername(), createdUser.getEmail(), userSession.getAccessToken(), createdUser.getCreatedDate());
+        return new UserCreateResponse(createdUser.getId(), createdUser.getUsername(), createdUser.getEmail(), userSession.getAccessToken(), createdUser.getCreatedDate());
     }
 
     public UserUpdateResponse update(Long id, UserUpdateRequest request) {
-        boolean emailExists = userRepository.existsByEmail(request.getEmail().toLowerCase());
-        boolean emailExistsToUser = userRepository.existsByIdAndEmail(id, request.getEmail().toLowerCase());
+        userManagementValidator.validateForUpdate(request);
+        boolean emailExists = userRepository.existsByEmail(request.email().toLowerCase());
+        boolean emailExistsToUser = userRepository.existsByIdAndEmail(id, request.email().toLowerCase());
 
         if (emailExists && !emailExistsToUser) {
             throw new UserAlreadyExistsException();
@@ -54,7 +61,7 @@ public class UserManagementService {
         User user = userRepository.findUserById(id).get();
         User updatedUser = userRepository.save(User.update(user));
 
-        return UserUpdateResponse.create(messageResourceService.getMessage("user.is.updated"), updatedUser.getUsername(), LocalDateTime.now());
+        return new UserUpdateResponse(messageResourceService.getMessage("user.is.updated"), updatedUser.getUsername(), LocalDateTime.now());
     }
 
     @Transactional
@@ -64,8 +71,9 @@ public class UserManagementService {
         userRepository.deleteById(user.getId());
         userSessionService.delete(user.getId());
 
-        return UserDeleteResponse.create(messageResourceService.getMessage("user.is.deleted"), LocalDateTime.now());
+        return new UserDeleteResponse(messageResourceService.getMessage("user.is.deleted"), LocalDateTime.now());
     }
+
     @Transactional
     public UserCloseResponse close(Long id) {
         User user = userRepository.findUserById(id).orElseThrow(UserNotFoundException::new);
@@ -74,6 +82,6 @@ public class UserManagementService {
         userRepository.save(closedUser);
         userSessionService.close(closedUser.getId());
 
-        return UserCloseResponse.create(messageResourceService.getMessage("user.is.closed"), LocalDateTime.now());
+        return new UserCloseResponse(messageResourceService.getMessage("user.is.closed"), LocalDateTime.now());
     }
 }
