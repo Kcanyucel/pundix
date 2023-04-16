@@ -12,8 +12,6 @@
     <groupId>com.pundix</groupId>
     <artifactId>pundix</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <name>pundix</name>
-    <description>pundix</description>
 
     <properties>
         <java.version>17</java.version>
@@ -24,6 +22,7 @@
         <spock-core.version>2.4-M1-groovy-4.0</spock-core.version>
         <groovy-all.version>3.0.17</groovy-all.version>
         <maven-compiler-plugin.version>3.11.0</maven-compiler-plugin.version>
+        <groovy-maven-plugin.version>2.1.1</groovy-maven-plugin.version>
     </properties>
 
     <dependencies>
@@ -40,12 +39,6 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-validation</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-test</artifactId>
-            <scope>test</scope>
         </dependency>
 
         <dependency>
@@ -92,12 +85,12 @@
             <plugin>
                 <groupId>org.codehaus.gmaven</groupId>
                 <artifactId>groovy-maven-plugin</artifactId>
-                <version>2.1.1</version>
+                <version>${groovy-maven-plugin.version}</version>
                 <dependencies>
                     <dependency>
                         <groupId>org.codehaus.groovy</groupId>
                         <artifactId>groovy-all</artifactId>
-                        <version>3.0.7</version>
+                        <version>${groovy-all.version}</version>
                         <type>pom</type>
                         <scope>test</scope>
                     </dependency>
