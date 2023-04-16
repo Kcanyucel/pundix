@@ -42,13 +42,13 @@ class UserManagementServiceSpec extends Specification {
         def response = userManagementService.create(request)
 
         then:
-
         1 * userManagementValidator.validateForCreate(_ as UserCreateRequest) > request
         1 * userRepository.existsByEmailOrUsername(request.email(), request.username()) >> false
         1 * User.create(_) >> user
         1 * userRepository.save(_ as User) >> user
         1 * userSessionService.create(_ as UserSession) >> userSession
 
+        response.id() == userSession.userId
         response.username() == request.username().toLowerCase()
         response.email() == request.email().toLowerCase()
         response.createdDate() != null

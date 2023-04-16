@@ -3,11 +3,10 @@ package com.pundix.service;
 import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Service;
 
-import java.io.Serializable;
 import java.util.Locale;
 
 @Service
-public class MessageResourceService implements Serializable {
+public class MessageResourceService {
 
     private final MessageSource messageSource;
 
