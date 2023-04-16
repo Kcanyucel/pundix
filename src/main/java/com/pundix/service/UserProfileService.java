@@ -18,6 +18,6 @@ public class UserProfileService {
     public UserInfoResponse get(Long id) {
         User user = userRepository.findUserById(id).orElseThrow(UserNotFoundException::new);
 
-        return UserInfoResponse.create(user.getId(), user.getUsername(), user.getEmail(), user.getName(), user.getSurname());
+        return new UserInfoResponse(user.getId(), user.getUsername(), user.getEmail(), user.getName(), user.getSurname());
     }
 }

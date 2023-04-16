@@ -39,7 +39,7 @@ public class UserSessionService {
             throw new UserSessionInfoNotFoundException();
         }
         userSessions.forEach(userSession -> {
-            UserSession.logout(userSession);
+            UserSession.close(userSession);
             userSessionRepository.save(userSession);
         });
     }
