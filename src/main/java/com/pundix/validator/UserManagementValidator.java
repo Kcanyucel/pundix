@@ -1,6 +1,7 @@
 package com.pundix.validator;
 
 import com.pundix.request.UserCreateRequest;
+import com.pundix.request.UserLoginRequest;
 import com.pundix.request.UserUpdateRequest;
 import com.pundix.service.ConfigurationService;
 import org.springframework.stereotype.Component;
@@ -27,9 +28,9 @@ public class UserManagementValidator extends BaseValidator {
         validateNameAndSurname(request.name(), request.surname());
     }
 
-    public void validateUsername(String username){
+    public void validateUsername(String username) {
         validateNoSpecialCharactersOrTurkishCharacter(username, "error.user.username.contains.non.latin.or.special");
-        validateMoreThanOrEquals(username,  configurationService.getValue("user.username.min.length"), "error.user.username.min.length");
+        validateMoreThanOrEquals(username, configurationService.getValue("user.username.min.length"), "error.user.username.min.length");
         validateLessThanOrEquals(username, configurationService.getValue("user.username.max.length"), "error.user.username.max.length");
     }
 
@@ -37,7 +38,7 @@ public class UserManagementValidator extends BaseValidator {
         if (name != null) {
             validateLetter(name, "error.user.name.non.letter");
         }
-        if (name != null) {
+        if (surname != null) {
             validateLetter(surname, "error.user.surname.non.letter");
         }
     }

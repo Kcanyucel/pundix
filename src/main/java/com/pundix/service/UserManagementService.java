@@ -3,6 +3,7 @@ package com.pundix.service;
 import com.pundix.entity.user.User;
 import com.pundix.entity.user.UserSession;
 import com.pundix.exception.custom.UserAlreadyExistsException;
+import com.pundix.exception.custom.UserEmailAlreadyExistsException;
 import com.pundix.exception.custom.UserNotFoundException;
 import com.pundix.repository.UserRepository;
 import com.pundix.request.UserCreateRequest;
@@ -56,9 +57,9 @@ public class UserManagementService {
         boolean emailExistsToUser = userRepository.existsByIdAndEmail(id, request.email().toLowerCase());
 
         if (emailExists && !emailExistsToUser) {
-            throw new UserAlreadyExistsException();
+            throw new UserEmailAlreadyExistsException();
         }
-        User user = userRepository.findUserById(id).get();
+        User user = userRepository.findUserById(id).orElseThrow(new UserNotFoundException());
         User updatedUser = userRepository.save(User.update(user));
 
         return new UserUpdateResponse(messageResourceService.getMessage("user.is.updated"), updatedUser.getUsername(), LocalDateTime.now());
