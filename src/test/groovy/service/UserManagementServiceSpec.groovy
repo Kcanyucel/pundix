@@ -43,7 +43,7 @@ class UserManagementServiceSpec extends Specification {
         def userSession = UserSession.create(1L, USERNAME)
 
         and:
-        1 * userManagementValidator.validateForCreate(request)
+        1 * userManagementValidator.validateForCreate(_)
         1 * userRepository.existsByEmailOrUsername(_, _) >> false
         1 * userRepository.save(_) >> { User savedUser -> savedUser.id = 1L; return savedUser }
         1 * userSessionService.create(_, _) >> userSession
@@ -63,7 +63,7 @@ class UserManagementServiceSpec extends Specification {
         def request = new UserCreateRequest(USERNAME, PASSWORD, EMAIL, NAME, SURNAME)
 
         and:
-        1 * userManagementValidator.validateForCreate(request)
+        1 * userManagementValidator.validateForCreate(_)
         1 * userRepository.existsByEmailOrUsername(_, _) >> true
 
         when:
@@ -81,11 +81,11 @@ class UserManagementServiceSpec extends Specification {
         def message = "Update Message"
 
         and:
-        1 * userManagementValidator.validateForUpdate(request)
+        1 * userManagementValidator.validateForUpdate(_)
         1 * userRepository.existsByEmail(_) >> false
         1 * userRepository.existsByIdAndEmail(_, _) >> true
         1 * userRepository.findUserById(_) >> Optional.of(user)
-        1 * userRepository.save(updatedUser) >> updatedUser
+        1 * userRepository.save(_) >> updatedUser
         1 * messageResourceService.getMessage(_) >> message
 
         when:
@@ -103,7 +103,7 @@ class UserManagementServiceSpec extends Specification {
         def request = new UserUpdateRequest(PASSWORD, EMAIL, NAME, SURNAME)
 
         and:
-        1 * userManagementValidator.validateForUpdate(request)
+        1 * userManagementValidator.validateForUpdate(_)
         1 * userRepository.existsByEmail(_) >> false
         1 * userRepository.existsByIdAndEmail(_, _) >> true
         1 * userRepository.findUserById(_) >> { throw new UserNotFoundException() }
@@ -122,7 +122,7 @@ class UserManagementServiceSpec extends Specification {
         and:
         1 * userManagementValidator.validateForUpdate(_)
         1 * userRepository.existsByEmail(_) >> true
-        1 * userRepository.existsByIdAndEmail(1L, _) >> false
+        1 * userRepository.existsByIdAndEmail(_, _) >> false
 
         when:
         userManagementService.update(1L, request)
@@ -164,18 +164,17 @@ class UserManagementServiceSpec extends Specification {
 
     def "should be close user successfully!"() {
         given:
-        def id = 1L
         def user = User.create(USERNAME, PASSWORD, EMAIL, NAME, SURNAME)
         def message = "Close Message"
 
         and:
         1 * userRepository.findUserById(_) >> Optional.of(user)
-        1 * userRepository.save(_ as User) >> user
+        1 * userRepository.save(_) >> user
         1 * userSessionService.close(_)
         1 * messageResourceService.getMessage(_) >> message
 
         when:
-        def response = userManagementService.close(id)
+        def response = userManagementService.close(1L)
 
         then:
         response.message() == message
