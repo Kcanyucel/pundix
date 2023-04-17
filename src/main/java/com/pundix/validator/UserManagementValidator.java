@@ -1,7 +1,6 @@
 package com.pundix.validator;
 
 import com.pundix.request.UserCreateRequest;
-import com.pundix.request.UserLoginRequest;
 import com.pundix.request.UserUpdateRequest;
 import com.pundix.service.ConfigurationService;
 import org.springframework.stereotype.Component;

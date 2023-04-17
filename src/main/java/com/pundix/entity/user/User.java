@@ -59,12 +59,14 @@ public class User extends BaseEntity {
         User user = new User();
         user.setUsername(username.toLowerCase());
         user.setPassword(PasswordEncoder.encodePassword(password));
+
         return user;
     }
 
     public static User close(User user) {
         user.setUserStatus(UserStatus.CLOSED);
         user.setUsername("CLOSED||<-->" + LocalDateTime.now() + "<-->||" + user.getUsername());
+
         return user;
     }
 
@@ -73,6 +75,7 @@ public class User extends BaseEntity {
         user.setEmail(user.getEmail().toLowerCase());
         user.setName(user.getName());
         user.setSurname(user.getSurname());
+
         return user;
     }
 
